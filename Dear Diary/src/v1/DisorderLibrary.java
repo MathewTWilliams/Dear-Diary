@@ -10,19 +10,15 @@ public class DisorderLibrary {
 
 	protected static ArrayList<Disorder> disorders;
 	
+	static {
+		
+	}
+	
 	/**
 	 * Constructor instantiates the ArrayList
 	 */
 	public DisorderLibrary() {
 		disorders = new ArrayList<>();
-	}
-
-	/**
-	 * Method adds Disorder to disorder library
-	 * @param disorder The disorder being added
-	 */
-	public void addDisorder(Disorder disorder) {
-		disorders.add(disorder);
 	}
 	
 	/**

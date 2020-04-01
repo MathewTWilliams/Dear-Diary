@@ -28,14 +28,15 @@ public class Tips {
 	}
 	
 	/**
-	 * Method allows for a tip to be added to an existing disorder or create a 
+	 * Method allows for a Tip to be added to particular disorder. However, the disorder must exist beforehand. 
 	 * @param disorder The disorder the particular tip pertains to
 	 * @param tips The tip(s) the user is adding to the ArrayList
 	 */
 	public void addTip(String disorder, ArrayList<String> tips) {
 		if (check(disorder) == 1) { 
-			allTips.remove(disorder);
-			allTips.put(disorder, tips);
+			for (String newTip: tips) {
+				allTips.get(disorder).add(newTip);
+			}
 		}
 	}
 	

@@ -16,10 +16,12 @@ public class Disorder {
 	 * Constructor defines name and description of disorder
 	 * @param name Name of the disorder
 	 * @param description Description of the disorder
+	 * @param symptoms Symptoms of disorder
 	 */
-	public Disorder(String name, String description) {
+	public Disorder(String name, String description, ArrayList<String> symptoms) {
 		this.name = name;
 		this.description = description;
+		this.symptoms = symptoms;
 	}
 	
 	//////////////////////////////////////////////////////////////
@@ -29,26 +31,17 @@ public class Disorder {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public String getDescription() {
 		return description;
 	}
 	
-	public void setDescription(String description) {
-		this.description = description;
+	public ArrayList<String> getSymptoms(){
+		return symptoms;
 	}
 	
-	public void setSymptoms(ArrayList<String> symptoms) {
-		this.symptoms = symptoms;
-	}
-
 	////////////////////////////////////////////////////////
 	
 	/**
-	 * !!!!!!!!!!WARNING: SWITCHED FROM ArrayList<Tips> to ArrayList<String> return!!!!!!!!!
 	 * Method returns an ArrayList of Tips dependent on disorder user inputs
 	 * @param disorder The disorder searched for
 	 * @return Tips of a particular disorder
