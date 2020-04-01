@@ -19,6 +19,7 @@ import javafx.scene.text.Font;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.chart.XYChart.Data;
@@ -45,7 +46,7 @@ public class TrackStatGUI extends SceneHandler
 	private final String EXERCISE_TEXT = "Exercise Tracker";
 	private final String MOOD_TEXT = "Mood Tracker";
 	
-
+	
 	private BorderPane mainPane; 
 	private BorderPane centerSubPane; 
 	private HBox bottomHBox;
@@ -55,173 +56,183 @@ public class TrackStatGUI extends SceneHandler
 	private Button backButton; 
 	private TextField statTextField; 
 	private Label descriptionLabel; 
-	
+	private Label successLabel;
+
 	private LineChart<String, Number> trackerLineChart; 
 	private Series<String,Number> mainSeries; 
-	NumberAxis yAxis; 
-	CategoryAxis xAxis; 
-	
-	
-	private HashMap<String, TestTracker> trackerTable; 
-	
-	/**
-	 * Basic Overriden Constructor
-	 * @param manager The GUI manager to make callbacks to. 
-	 */
+	private NumberAxis yAxis; 
+	private CategoryAxis xAxis; 
+
+
+	private HashMap<String, Tracker> trackerTable; 
+
 	public TrackStatGUI(GUIManager manager) 
 	{
 		super(manager);
+		trackerTable = new HashMap<String, Tracker>();
+		trackerTable.put("Sleep Tracker", new Tracker());
+		trackerTable.put("Mood Tracker", new Tracker());
+		trackerTable.put("Exercise Tracker", new Tracker());
+		trackerTable.put("Diet Tracker", new Tracker());
 	}
 
-	/**
-	 * Overriden method used to clean up the scene before a new scene is switched to. 
-	 * Currently Empty. 
-	 */
 	@Override
 	protected void cleanUpScene() 
 	{
 		super.cleanUpScene();
 	}
 
-	/**
-	 * Overriden method used to prepare the scene before it is switched to. 
-	 */
 	@Override
 	protected void prepareScene() 
 	{
-		
+
 		setUpPanes();
 		Scene scene = new Scene(mainPane);
 		setScene(scene);
-		
-		makeTrackerTable();
-		makeLineChart(); 
 		setUpLabels(); 
 		setUpChoiceBox(); 
 		setUpButtons(); 
 		makeTextField();
-		
+		makeLineChart();
+
 		changeTracker(MOOD_TEXT);
-		
-		
+
+
 	}
-	
-	/**
-	 * Method used to setup all the labels in the Track Stats screen. 
-	 */
 	private void setUpLabels()
 	{
 		mainPane.setTop(getTitle());
-		
 		chooseTrackerLabel = new Label("Which Statistic would you like to track?");
 		chooseTrackerLabel.setFont(new Font("Arial",35));
 		chooseTrackerLabel.setTextFill(Color.BLACK);
 		BorderPane.setAlignment(chooseTrackerLabel, Pos.TOP_CENTER);
 		centerSubPane.setTop(chooseTrackerLabel);
-		
+		successLabel = new Label("Success!");
+		successLabel.setFont(new Font("Ariel", 35));
+		successLabel.setTextFill(Color.BLACK);
+		BorderPane.setAlignment(successLabel, Pos.CENTER);
+		centerSubPane.setRight(successLabel);
 		descriptionLabel = new Label(); 
 		descriptionLabel.setFont(new Font("Arial",18));
 		descriptionLabel.setTextFill(Color.BLACK);
 		BorderPane.setAlignment(descriptionLabel, Pos.CENTER);
 		centerSubPane.setBottom(descriptionLabel);
-	
+
 	}
-	
-	/**
-	 * Method used to setup the choice box for the Track Stats screen. 
-	 */
+
 	private void setUpChoiceBox()
 	{
 		statChoiceBox = new ChoiceBox<String>(); 
 		statChoiceBox.getItems().addAll(MOOD_TEXT, EXERCISE_TEXT, DIET_TEXT, SLEEP_TEXT);
 		BorderPane.setAlignment(statChoiceBox, Pos.TOP_CENTER);
 		centerSubPane.setCenter(statChoiceBox);
-		
-		
+
+
 		//set up listener
 		statChoiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
-			
+
 			public void changed(ObservableValue<? extends String> ov, String oldValue, String newValue)
 			{
 				changeTracker(newValue);
 			}
 		});
 	}
-	
-	/**
-	 * Method used to set up the bottons for the Track Stats screen.
-	 */
+
 	private void setUpButtons()
 	{
 		submitButton = new Button("Track Stat"); 
 		backButton = new Button("Main Menu");
-		
+
 		bottomHBox.getChildren().addAll(submitButton, backButton);
 		
-		submitButton.setOnMouseClicked( new EventHandler<MouseEvent>() {
-			
-			public void handle(MouseEvent event)
-			{
-				String timeZone = "America/New_York";
-				String now = LocalDate.now(ZoneId.of(timeZone)).toString();
-				double number = Double.valueOf(statTextField.getText());
-				
-				
-				Data<String,Number> newPoint = new Data<String,Number>(now,number);
-				mainSeries.getData().add(newPoint);
-				statTextField.clear();
-				submitButton.setDisable(true);
-				
-				trackerTable.get(statChoiceBox.getValue()).testTracks.put(now, number);
+		submitButton.setOnAction((e) -> {
+			if(validInput(statChoiceBox.getValue(), Integer.parseInt(statTextField.getText()))) {
+				if(trackerTable.get(statChoiceBox.getValue()).inputStat(Integer.parseInt(statTextField.getText()))) {
+					successLabel.setText("YUUUUP");
+				}
+				else {
+					successLabel.setText("Stat tracked today already");
+				}
+			}
+			else {
+				successLabel.setText("Invalid Entry");
 			}
 		});
-		
-		
+
 		backButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			
+
 			public void handle(MouseEvent event)
 			{
 				cleanUpScene(); 
 				getGUIManager().moveToMainMenu();
-				
+
 			}
 		});
-		
+
 	}
 	
+	public boolean validInput(String currentTracker, int stat) {
+		if(currentTracker.equals("Mood Tracker")) {
+			if(stat > 10 || stat < 1) {
+				return false;
+			}
+			return true;
+		}
+		else if(currentTracker.equals("Sleep Tracker")) {
+			if(stat > 24 || stat < 1) {
+				return false;
+			}
+			return true;
+		}
+		else if(currentTracker.equals("Exercise Tracker")) {
+			if(stat > 24 || stat < 1) {
+				return false;
+			}
+			return true;
+		}
+		else if(currentTracker.equals("Diet Tracker")) {
+			if(stat > 10000 || stat < 1) {
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
 	/**
 	 * Method used by our ChangeListener to change the Screen based on the tracker selected
 	 * @param trackerToChange The new tracker that has been selected. 
 	 */
 	private void changeTracker(String trackerToChange)
 	{
-		
-		
+
+
 		statChoiceBox.setValue(trackerToChange);
-		TestTracker currentTestTracker = trackerTable.get(trackerToChange);
-		
-		
-		descriptionLabel.setText(currentTestTracker.description);
-		yAxis.setLabel(currentTestTracker.yAxisString);
-		trackerLineChart.setTitle(trackerToChange);
-		mainSeries = new Series<String,Number>();
-		//grabs the fist word found in trackerToChange string.
-		mainSeries.setName(trackerToChange.split("\\s")[0]);
-		
-		Set<String> keys = currentTestTracker.testTracks.keySet();
-		for(String key : keys)
+
+		if(trackerToChange.equals("Mood Tracker")) {
+			descriptionLabel.setText("What is your mood 1-10");
+		}
+		else if(trackerToChange.equals("Sleep Tracker")) {
+			descriptionLabel.setText("How many hours did you sleep?");
+		}
+		else if(trackerToChange.equals("Exercise Tracker")) {
+			descriptionLabel.setText("How long did you work out today?");
+		}
+		else if(trackerToChange.equals("Diet Tracker")) {
+			descriptionLabel.setText("About how many calories did you eat today?");
+		}
+		HashMap<String, Integer> copyStats = trackerTable.get(trackerToChange).getStats();
+		for(String key : copyStats.keySet())
 		{
-			Data<String,Number> point = new Data<String,Number>(key,currentTestTracker.testTracks.get(key));
+			Data<String, Number> point = new Data<String, Number>(key, copyStats.get(key));
 			mainSeries.getData().add(point);
 		}
 		
 		trackerLineChart.getData().clear();
 		trackerLineChart.getData().add(mainSeries);
 		statTextField.clear();
-		submitButton.setDisable(true);
-		
+
 	}
-	
+
 	/**
 	 * Method used to set up the panes of Track Stats Screen. 
 	 */
@@ -233,43 +244,16 @@ public class TrackStatGUI extends SceneHandler
 		centerSubPane.setPadding(new Insets(10,10,10,10));
 		BorderPane.setAlignment(centerSubPane, Pos.CENTER);
 		mainPane.setCenter(centerSubPane);
-		
+
 		bottomHBox = new HBox();
 		bottomHBox.setPadding(new Insets(10,10,10,10));
 		bottomHBox.setSpacing(40);
 		bottomHBox.setAlignment(Pos.CENTER);
 		BorderPane.setAlignment(bottomHBox,Pos.CENTER);
 		mainPane.setBottom(bottomHBox);
-		
-		
-	}
-	
-	/**
-	 * Test method used to make a hash table for a tracker name and its associated Test Tracker
-	 */
-	private void makeTrackerTable()
-	{
-		trackerTable = new HashMap<String, TestTracker>();
-		trackerTable.put(MOOD_TEXT, new TestTracker("Mood Description", "out of 10"));
-		trackerTable.put(DIET_TEXT, new TestTracker("Diet Description", "Calories"));
-		trackerTable.put(SLEEP_TEXT, new TestTracker("Sleep Description", "Hours"));
-		trackerTable.put(EXERCISE_TEXT, new TestTracker("Exercise Description", "Minutes"));
+
 
 	}
-	
-	/**
-	 * Method used to make the line chart for the Track stats screen.  
-	 */
-	private void makeLineChart()
-	{
-		yAxis = new NumberAxis(); 
-		xAxis = new CategoryAxis(); 
-		xAxis.setLabel("Date");
-		trackerLineChart = new LineChart<String, Number>(xAxis,yAxis);
-		BorderPane.setAlignment(trackerLineChart, Pos.CENTER);
-		centerSubPane.setRight(trackerLineChart);
-	}
-	
 	/**
 	 * Method used to make the stats text field
 	 */
@@ -281,66 +265,16 @@ public class TrackStatGUI extends SceneHandler
 		statTextField.setMaxWidth(200);
 		bottomHBox.getChildren().add(0, statTextField);
 		
-	
-		statTextField.setOnKeyReleased(new EventHandler<KeyEvent>() {
-			
-			public void handle(KeyEvent event)
-			{
-				String regex = "\\d+(\\.\\d+)?";
-				
-				if(statTextField.getText().matches(regex))
-				{
-					submitButton.setDisable(false);
-				}
-				
-				else
-				{
-					submitButton.setDisable(true);
-				}
-			}
-		});
 	}
-	
-	
-	/**
-	 * 
-	 * Just used as a test class until actual trackers are implemented. 
-	 *
-	 */
-	private class TestTracker
+	private void makeLineChart()
 	{
-		public HashMap<String,Double> testTracks; 
-		public String description; 
-		public String yAxisString;
-		
-		public TestTracker(String description, String yAxisString)
-		{
-			this.description = description; 
-			this.yAxisString = yAxisString; 
-			testTracks = new LinkedHashMap<String, Double>();
-			makeRandomTableValues();
-		}
-		
-		/**
-		 * Function that makes test dates and values
-		 */
-		private void makeRandomTableValues()
-		{
-			String timeZone = "America/New_York";
-			LocalDate now = LocalDate.now(ZoneId.of(timeZone));
-			Random rand = new Random(); 
-			int testBound = 11;
-			int numRandomValues = 4;
-			
-			for(int i = 0 ; i < numRandomValues; i++)
-			{
-				String testDay = now.minusDays(numRandomValues - i).toString();
-				double testValue = rand.nextDouble() * rand.nextInt(testBound);
-				testTracks.put(testDay, testValue);
-			}
-		}
-		
+		yAxis = new NumberAxis(); 
+		xAxis = new CategoryAxis(); 
+		xAxis.setLabel("Date");
+		trackerLineChart = new LineChart<String, Number>(xAxis,yAxis);
+		BorderPane.setAlignment(trackerLineChart, Pos.CENTER_LEFT);
+		centerSubPane.setLeft(trackerLineChart);
 	}
-	
+
 
 }

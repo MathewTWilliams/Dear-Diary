@@ -119,10 +119,11 @@ public class GUIManager extends Application {
 	/**
 	 * Method used by other screens to move to the TrackStats Screen. 
 	 */
-	public void moveToTrackStatScreen()
+	public TrackStatGUI moveToTrackStatScreen()
 	{
 		currentScene = trackStatScreen.getScene(); 
 		mainStage.setScene(currentScene);
+		return trackStatScreen;
 	}
 	
 	
