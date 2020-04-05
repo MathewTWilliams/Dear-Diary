@@ -7,6 +7,9 @@ package v1;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -28,7 +31,7 @@ public class FXMLDocumentController implements Initializable {
     @FXML
     TextField statSubmission;
     @FXML
-    ChoiceBox trackerBox;
+    ChoiceBox<String> trackerBox;
     @FXML
     Button mainMenuBtn;
     
@@ -39,7 +42,7 @@ public class FXMLDocumentController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+    	trackerBox.getItems().addAll("Mood Tracker", "Exercise Tracker", "Diet Tracker", "Sleep Tracker");
     }    
     
 }
