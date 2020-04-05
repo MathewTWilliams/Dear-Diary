@@ -1,11 +1,12 @@
 package v1;
 
-
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -14,6 +15,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.control.ChoiceBox;
@@ -28,6 +30,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Random;
 import java.util.Set;
+import java.io.IOException;
 import java.time.LocalDate; 
 import java.time.ZoneId;
 
@@ -41,14 +44,16 @@ import java.time.ZoneId;
 public class TrackStatGUI extends SceneHandler 
 {
 	//for testing purposes for now. 
-	private final String SLEEP_TEXT = "Sleep Tracker";
+	/*private final String SLEEP_TEXT = "Sleep Tracker";
 	private final String DIET_TEXT = "Diet Tracker";
 	private final String EXERCISE_TEXT = "Exercise Tracker";
 	private final String MOOD_TEXT = "Mood Tracker";
-	
-	
+
+
 	private BorderPane mainPane; 
-	private BorderPane centerSubPane; 
+	private BorderPane centerSubPane;
+	private BorderPane leftSubPane;
+	private BorderPane rightSubPane;
 	private HBox bottomHBox;
 	private Label chooseTrackerLabel; 
 	private ChoiceBox<String> statChoiceBox; 
@@ -57,16 +62,16 @@ public class TrackStatGUI extends SceneHandler
 	private TextField statTextField; 
 	private Label descriptionLabel; 
 	private Label successLabel;
+	private Button showChart;
+	private VBox header;
 
-	private LineChart<String, Number> trackerLineChart; 
-	private Series<String,Number> mainSeries; 
-	private NumberAxis yAxis; 
-	private CategoryAxis xAxis; 
-
+	private LineChart<?, ?> statHistory;
+	private CategoryAxis xAxis;
+	private NumberAxis yAxis;*/
 
 	private HashMap<String, Tracker> trackerTable; 
 
-	public TrackStatGUI(GUIManager manager) 
+	public TrackStatGUI(GUIManager manager) throws Exception 
 	{
 		super(manager);
 		trackerTable = new HashMap<String, Tracker>();
@@ -74,10 +79,20 @@ public class TrackStatGUI extends SceneHandler
 		trackerTable.put("Mood Tracker", new Tracker());
 		trackerTable.put("Exercise Tracker", new Tracker());
 		trackerTable.put("Diet Tracker", new Tracker());
+		Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
+		Scene scene = new Scene(root);
+		
+		setScene(scene);
 	}
 
 	@Override
-	protected void cleanUpScene() 
+	protected void prepareScene() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/**@Override
+	/*protected void cleanUpScene() 
 	{
 		super.cleanUpScene();
 	}
@@ -93,7 +108,6 @@ public class TrackStatGUI extends SceneHandler
 		setUpChoiceBox(); 
 		setUpButtons(); 
 		makeTextField();
-		makeLineChart();
 
 		changeTracker(MOOD_TEXT);
 
@@ -105,18 +119,20 @@ public class TrackStatGUI extends SceneHandler
 		chooseTrackerLabel = new Label("Which Statistic would you like to track?");
 		chooseTrackerLabel.setFont(new Font("Arial",35));
 		chooseTrackerLabel.setTextFill(Color.BLACK);
-		BorderPane.setAlignment(chooseTrackerLabel, Pos.TOP_CENTER);
-		centerSubPane.setTop(chooseTrackerLabel);
+
 		successLabel = new Label("Success!");
 		successLabel.setFont(new Font("Ariel", 35));
 		successLabel.setTextFill(Color.BLACK);
 		BorderPane.setAlignment(successLabel, Pos.CENTER);
-		centerSubPane.setRight(successLabel);
+		mainPane.setRight(successLabel);
+
 		descriptionLabel = new Label(); 
 		descriptionLabel.setFont(new Font("Arial",18));
 		descriptionLabel.setTextFill(Color.BLACK);
 		BorderPane.setAlignment(descriptionLabel, Pos.CENTER);
 		centerSubPane.setBottom(descriptionLabel);
+		
+		header.getChildren().add(chooseTrackerLabel);
 
 	}
 
@@ -124,8 +140,7 @@ public class TrackStatGUI extends SceneHandler
 	{
 		statChoiceBox = new ChoiceBox<String>(); 
 		statChoiceBox.getItems().addAll(MOOD_TEXT, EXERCISE_TEXT, DIET_TEXT, SLEEP_TEXT);
-		BorderPane.setAlignment(statChoiceBox, Pos.TOP_CENTER);
-		centerSubPane.setCenter(statChoiceBox);
+		header.getChildren().add(statChoiceBox);
 
 
 		//set up listener
@@ -138,24 +153,31 @@ public class TrackStatGUI extends SceneHandler
 		});
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void setUpButtons()
 	{
 		submitButton = new Button("Track Stat"); 
 		backButton = new Button("Main Menu");
+		showChart = new Button("View History");
 
-		bottomHBox.getChildren().addAll(submitButton, backButton);
-		
+
+		bottomHBox.getChildren().addAll(submitButton, showChart, backButton);
+
 		submitButton.setOnAction((e) -> {
-			if(validInput(statChoiceBox.getValue(), Integer.parseInt(statTextField.getText()))) {
-				if(trackerTable.get(statChoiceBox.getValue()).inputStat(Integer.parseInt(statTextField.getText()))) {
-					successLabel.setText("YUUUUP");
+			try {
+				if(validInput(statChoiceBox.getValue(), Integer.parseInt(statTextField.getText()))) {
+					if(trackerTable.get(statChoiceBox.getValue()).inputStat(Integer.parseInt(statTextField.getText()))) {
+						successLabel.setText("YUUUUP");
+					}
+					else {
+						successLabel.setText("Stat tracked today already");
+					}
 				}
 				else {
-					successLabel.setText("Stat tracked today already");
+					successLabel.setText("Invalid Entry");
 				}
-			}
-			else {
-				successLabel.setText("Invalid Entry");
+			}catch(NumberFormatException ex){
+				successLabel.setText("Please Enter a valid number");
 			}
 		});
 
@@ -169,8 +191,35 @@ public class TrackStatGUI extends SceneHandler
 			}
 		});
 
+
+
+		showChart.setOnAction((e) -> {
+			if(trackerTable.get(statChoiceBox.getValue()).getStats().isEmpty()) {
+				successLabel.setText("No data to display");
+			}
+			else {
+				HashMap<String, Integer> copyStats = trackerTable.get(statChoiceBox.getValue()).getStats();
+				xAxis = new CategoryAxis();
+				xAxis.setLabel("Date");
+				yAxis = new NumberAxis();
+				yAxis.setLabel("Label");
+
+				statHistory = new LineChart(xAxis, yAxis);
+
+				XYChart.Series series = new XYChart.Series();
+
+				series.setName("Stats");
+
+				for(String keyDate : copyStats.keySet()){
+					series.getData().add(new XYChart.Data(keyDate,(Number)copyStats.get(keyDate)));
+				}
+				statHistory.getData().add(series);
+				leftSubPane.getChildren().add(statHistory);
+			}
+		});
+
 	}
-	
+
 	public boolean validInput(String currentTracker, int stat) {
 		if(currentTracker.equals("Mood Tracker")) {
 			if(stat > 10 || stat < 1) {
@@ -202,7 +251,7 @@ public class TrackStatGUI extends SceneHandler
 	 * Method used by our ChangeListener to change the Screen based on the tracker selected
 	 * @param trackerToChange The new tracker that has been selected. 
 	 */
-	private void changeTracker(String trackerToChange)
+	/**private void changeTracker(String trackerToChange)
 	{
 
 
@@ -220,15 +269,7 @@ public class TrackStatGUI extends SceneHandler
 		else if(trackerToChange.equals("Diet Tracker")) {
 			descriptionLabel.setText("About how many calories did you eat today?");
 		}
-		HashMap<String, Integer> copyStats = trackerTable.get(trackerToChange).getStats();
-		for(String key : copyStats.keySet())
-		{
-			Data<String, Number> point = new Data<String, Number>(key, copyStats.get(key));
-			mainSeries.getData().add(point);
-		}
-		
-		trackerLineChart.getData().clear();
-		trackerLineChart.getData().add(mainSeries);
+
 		statTextField.clear();
 
 	}
@@ -236,7 +277,7 @@ public class TrackStatGUI extends SceneHandler
 	/**
 	 * Method used to set up the panes of Track Stats Screen. 
 	 */
-	private void setUpPanes()
+	/*private void setUpPanes()
 	{
 		mainPane = new BorderPane(); 
 		mainPane.setStyle("-fx-background-color: GREY");
@@ -244,7 +285,14 @@ public class TrackStatGUI extends SceneHandler
 		centerSubPane.setPadding(new Insets(10,10,10,10));
 		BorderPane.setAlignment(centerSubPane, Pos.CENTER);
 		mainPane.setCenter(centerSubPane);
-
+		
+		header = new VBox();
+		header.setPadding(new Insets(10,10,10,10));
+		header.setSpacing(40);
+		BorderPane.setAlignment(header, Pos.TOP_CENTER);
+		mainPane.setTop(header);
+		
+		
 		bottomHBox = new HBox();
 		bottomHBox.setPadding(new Insets(10,10,10,10));
 		bottomHBox.setSpacing(40);
@@ -257,24 +305,13 @@ public class TrackStatGUI extends SceneHandler
 	/**
 	 * Method used to make the stats text field
 	 */
-	private void makeTextField()
+	/*private void makeTextField()
 	{
 		statTextField = new TextField(); 
 		statTextField.setAlignment(Pos.CENTER_LEFT);
 		statTextField.setPromptText("Enter stat here");
 		statTextField.setMaxWidth(200);
 		bottomHBox.getChildren().add(0, statTextField);
-		
-	}
-	private void makeLineChart()
-	{
-		yAxis = new NumberAxis(); 
-		xAxis = new CategoryAxis(); 
-		xAxis.setLabel("Date");
-		trackerLineChart = new LineChart<String, Number>(xAxis,yAxis);
-		BorderPane.setAlignment(trackerLineChart, Pos.CENTER_LEFT);
-		centerSubPane.setLeft(trackerLineChart);
-	}
 
-
+	}*/
 }

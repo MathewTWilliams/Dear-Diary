@@ -46,9 +46,10 @@ public class GUIManager extends Application {
 	
 	/**
 	 * Overriden method used to help setup the stage and to initialize the GUI. 
+	 * @throws Exception 
 	 */
 	@Override
-	public void start(Stage primaryStage) 
+	public void start(Stage primaryStage) throws Exception 
 	{
 		userData = new User(); 
 		mainStage = primaryStage;
@@ -75,8 +76,9 @@ public class GUIManager extends Application {
 	/** 
 	 * Method used to make the difference screens in the application.
 	 * Also sets the default currentScene before the app starts. 
+	 * @throws Exception 
 	 */
-	private void makeDefaultScenes()
+	private void makeDefaultScenes() throws Exception
 	{
 		
 		homeScreen = new HomeScreenGUI(this);
