@@ -41,7 +41,15 @@ public class HomeScreenGUI extends SceneHandler
 			
 			public void handle(MouseEvent event)
 			{
-				getGUIManager().moveToLoginScene();
+				if(getGUIManager().getIsNewUser())
+				{
+					getGUIManager().moveToLoginScene();
+				}
+				
+				else
+				{
+					getGUIManager().moveToMainMenu();
+				}
 			}
 		});
 	}
