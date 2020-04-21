@@ -1,10 +1,12 @@
 package v1;
 
-import java.time.LocalDateTime;;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
-public abstract class Entry 
+public abstract class Entry implements Serializable 
 {
 	
+	private static final long serialVersionUID = 1L;
 	
 	protected String userEntry; //as entry or a caption for photo, video
 	protected LocalDateTime date; 
