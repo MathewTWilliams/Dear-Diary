@@ -35,6 +35,8 @@ public class GUIManager extends Application {
 	
 	private User userData;
 	
+	private boolean isNewUser = false; 
+	
 	/**
 	 * Method used to actually launch the GUI, called by the main method in Driver.
 	 * @param args any arguments passed to the programmed.n
@@ -51,11 +53,28 @@ public class GUIManager extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception 
 	{
-		userData = new User(); 
+		userData = User.deserializeData();
+		if(userData == null)
+		{
+			userData = new User(); 
+			isNewUser = true; 
+		}
+		
+		
+		
 		mainStage = primaryStage;
 		makeTitle();
 		makeDefaultScenes(); 
 		setStage();
+	}
+	
+	/**
+	 * Override the stop method to allow Serialization to occur
+	 */
+	@Override
+	public void stop()
+	{
+		User.serializeData(userData);
 	}
 	
 
@@ -163,5 +182,10 @@ public class GUIManager extends Application {
 	public User getUserData()
 	{
 		return userData; 
+	}
+	
+	public boolean getIsNewUser()
+	{
+		return isNewUser; 
 	}
 }

@@ -4,9 +4,16 @@ import java.time.LocalDateTime;;
 
 public abstract class Entry 
 {
+	
+	
 	protected String userEntry; //as entry or a caption for photo, video
 	protected LocalDateTime date; 
-	
+
+	public Entry()
+	{
+		userEntry = ""; 
+		date = LocalDateTime.now();
+	}
 	
 	public Entry(String entry, LocalDateTime date)
 	{
