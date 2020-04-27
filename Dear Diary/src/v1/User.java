@@ -47,7 +47,7 @@ public class User
 	
 	public String findEntry(LocalDateTime dateTime)
 	{
-		return diary.getEntry(dateTime);
+		return diary.getEntryText(dateTime);
 	}
 	
 	public void addDisorder(Disorder disorder)

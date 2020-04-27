@@ -2,17 +2,15 @@ package v1;
 
 import java.time.LocalDateTime; 
 
-//test comment for github
-
+/**
+ * Class used to store the data of a basic text entry
+ * @author Liam Donovan
+ * @version 4.26.2020
+ */
 public class BasicEntry extends Entry {
 	
-	protected String userEntry;
-	
-	
-	public BasicEntry(String entry, LocalDateTime date)
+	public BasicEntry(String text, LocalDateTime date)
 	{
-		super(entry, date);
-		
+		super(text, date);
 	}
-
 }

@@ -23,7 +23,6 @@ import javafx.scene.text.Font;
  * Class used to handle the scene for our ViewEntriesScreen
  * @author Matt Williams
  * @version 3.25.2020
- *
  */
 
 public class ViewEntriesScreen extends SceneHandler
@@ -199,7 +198,7 @@ public class ViewEntriesScreen extends SceneHandler
 		{
 			if(entries.get(i).getDate().toString().equals(date))
 			{
-				entryView.setText(entries.get(i).getUserEntry());
+				entryView.setText(entries.get(i).getText());
 				return;
 			}
 		}
