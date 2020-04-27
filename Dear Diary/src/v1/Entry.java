@@ -1,19 +1,29 @@
 package v1;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 /**
  * Class used to store the data of all the entries in our Diary
  * @author Liam Donovan
+ * @author Matt Williams
  * @version 4.26.2020
  */
-public abstract class Entry 
+
+public abstract class Entry implements Serializable 
 {
+	
+	private static final long serialVersionUID = 1L;
+	
 	protected String text; //as entry or a caption for photo, video
 	protected LocalDateTime date; 
-	private ArrayList<Comment> comments;
-	
+  protected ArrayList<Comment> comments; 
+	public Entry()
+	{
+		userEntry = ""; 
+		date = LocalDateTime.now();
+	}
 	
 	public Entry(String text, LocalDateTime date)
 	{

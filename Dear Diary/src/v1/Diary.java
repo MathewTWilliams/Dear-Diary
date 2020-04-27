@@ -2,7 +2,8 @@ package v1;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.ArrayList; 
+import java.util.ArrayList;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime; 
 import java.time.ZoneId;
@@ -13,8 +14,13 @@ import java.util.Collection;
  * @author Matt Williams, Liam Donovan
  * @version 4.26.2020
  */
-public class Diary 
+
+public class Diary implements Serializable
 {
+	
+	private static final long serialVersionUID = 1L;
+	
+	
 	//for the key in the hashmap could also be local date
 	private HashMap<String, ArrayList<Entry>> entries; 
 	

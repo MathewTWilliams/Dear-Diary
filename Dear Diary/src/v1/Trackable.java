@@ -1,12 +1,11 @@
 package v1;
 
-import java.util.Date; 
+import java.io.Serializable;
+import java.util.HashMap;
 
-public interface Trackable 
-{	
-	public abstract void TrackStat(int stat);
-	public abstract void EditStat(Date date, int newStat);
-	public abstract void DeleteStat(Date date);
+public interface Trackable extends Serializable{
 	
 	
+	public abstract boolean trackStat(int stat);
+	public abstract HashMap<String, Integer> getStat();
 }

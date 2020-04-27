@@ -35,6 +35,8 @@ public class GUIManager extends Application {
 	
 	private User userData;
 	
+	private boolean isNewUser = false; 
+	
 	/**
 	 * Method used to actually launch the GUI, called by the main method in Driver.
 	 * @param args any arguments passed to the programmed.n
@@ -46,15 +48,33 @@ public class GUIManager extends Application {
 	
 	/**
 	 * Overriden method used to help setup the stage and to initialize the GUI. 
+	 * @throws Exception 
 	 */
 	@Override
-	public void start(Stage primaryStage) 
+	public void start(Stage primaryStage) throws Exception 
 	{
-		userData = new User(); 
+		userData = User.deserializeData();
+		if(userData == null)
+		{
+			userData = new User(); 
+			isNewUser = true; 
+		}
+		
+		
+		
 		mainStage = primaryStage;
 		makeTitle();
 		makeDefaultScenes(); 
 		setStage();
+	}
+	
+	/**
+	 * Override the stop method to allow Serialization to occur
+	 */
+	@Override
+	public void stop()
+	{
+		User.serializeData(userData);
 	}
 	
 
@@ -75,8 +95,9 @@ public class GUIManager extends Application {
 	/** 
 	 * Method used to make the difference screens in the application.
 	 * Also sets the default currentScene before the app starts. 
+	 * @throws Exception 
 	 */
-	private void makeDefaultScenes()
+	private void makeDefaultScenes() throws Exception
 	{
 		
 		homeScreen = new HomeScreenGUI(this);
@@ -119,10 +140,11 @@ public class GUIManager extends Application {
 	/**
 	 * Method used by other screens to move to the TrackStats Screen. 
 	 */
-	public void moveToTrackStatScreen()
+	public TrackStatGUI moveToTrackStatScreen()
 	{
 		currentScene = trackStatScreen.getScene(); 
 		mainStage.setScene(currentScene);
+		return trackStatScreen;
 	}
 	
 	
@@ -160,5 +182,10 @@ public class GUIManager extends Application {
 	public User getUserData()
 	{
 		return userData; 
+	}
+	
+	public boolean getIsNewUser()
+	{
+		return isNewUser; 
 	}
 }

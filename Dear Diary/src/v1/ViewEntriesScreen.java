@@ -1,6 +1,8 @@
 package v1;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.function.Consumer;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -15,9 +17,12 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 //This is a test
 /**
  * Class used to handle the scene for our ViewEntriesScreen
@@ -28,16 +33,22 @@ import javafx.scene.text.Font;
 public class ViewEntriesScreen extends SceneHandler
 {
 	
-	private BorderPane mainPane; 
+	private VBox mainPane; // root pane
+	private HBox subPane;  // child of root
 	private ListView<String> dateList; 
 	private TextArea entryView;
 	private Label datesLabel;
 	private Label entriesLabel;
 	private Button mainMenuButton;
 	
-	private VBox leftVBox;
-	private VBox rightVBox;
+	private VBox leftVBox; //child of subPane
+	private VBox rightVBox; //child of subPane
 	
+	
+	private HashMap<String, Consumer<Entry>> lambdaMap;
+	
+	private WebView entryFeed = new WebView();
+	private WebEngine entryEngine = entryFeed.getEngine(); 
 	
 	
 	/**
@@ -47,6 +58,8 @@ public class ViewEntriesScreen extends SceneHandler
 	public ViewEntriesScreen(GUIManager manager) 
 	{
 		super(manager);
+		makeLambdaMap(); 
+	
 	}
 	
 	/**
@@ -65,41 +78,45 @@ public class ViewEntriesScreen extends SceneHandler
 	@Override
 	protected void prepareScene() 
 	{
-		mainPane = new BorderPane();
+		mainPane = new VBox();
+		mainPane.setAlignment(Pos.TOP_CENTER);
 		mainPane.setPadding(new Insets(10,10,10,10));
 		mainPane.setStyle("-fx-background-color : GREY");
 		Scene scene = new Scene(mainPane);
 		setScene(scene);
 		
-		makeVBoxes();
+		makeBoxes();
 		setUpLabels();
+		makeListView();
 		makeTextArea(); 
 		setUpButtons();
-		makeListView();
 	}
 	
 	/**
 	 * Method used to Make the Vertical Boxes for the View Entries Screen.
 	 */
-	private void makeVBoxes()
+	private void makeBoxes()
 	{
+		subPane = new HBox(); 
 		leftVBox = new VBox();
 		rightVBox = new VBox();
 		
+		
+		subPane.setPadding(new Insets(10,10,10,10));
 		leftVBox.setPadding(new Insets(10,10,10,10));
 		rightVBox.setPadding(new Insets(10,10,10,10));
 		
-		leftVBox.setAlignment(Pos.CENTER);
-		rightVBox.setAlignment(Pos.CENTER);
+		subPane.setAlignment(Pos.TOP_CENTER);
+		leftVBox.setAlignment(Pos.TOP_CENTER);
+		rightVBox.setAlignment(Pos.TOP_CENTER);
 		
+		subPane.setSpacing(20);
 		leftVBox.setSpacing(20);
 		rightVBox.setSpacing(20);
 		
-		BorderPane.setAlignment(leftVBox, Pos.CENTER);
-		BorderPane.setAlignment(rightVBox, Pos.CENTER);
-		
-		mainPane.setLeft(leftVBox);
-		mainPane.setRight(rightVBox);
+
+		mainPane.getChildren().add(subPane);
+		subPane.getChildren().addAll(leftVBox,rightVBox);
 	}
 	
 	/**
@@ -109,7 +126,7 @@ public class ViewEntriesScreen extends SceneHandler
 	{
 		entryView = new TextArea(); 
 		entryView.setEditable(false);
-		rightVBox.getChildren().add(entryView);
+		//rightVBox.getChildren().add(entryView);
 		
 		entryView.setMaxSize(400, 400);
 		
@@ -120,7 +137,7 @@ public class ViewEntriesScreen extends SceneHandler
 	 */
 	private void setUpLabels()
 	{
-		mainPane.setTop(getTitle());
+		mainPane.getChildren().add(0, getTitle());
 		
 		datesLabel = new Label("Date and Time of Entries");
 		datesLabel.setFont( new Font("Arial",15));
@@ -130,7 +147,7 @@ public class ViewEntriesScreen extends SceneHandler
 		entriesLabel = new Label("Entries");
 		entriesLabel.setFont(new Font("Arial",15));
 		entriesLabel.setTextFill(Color.BLACK);
-		rightVBox.getChildren().add(entriesLabel);
+		leftVBox.getChildren().add(entriesLabel);
 		
 	}
 	
@@ -141,8 +158,7 @@ public class ViewEntriesScreen extends SceneHandler
 	{
 		mainMenuButton = new Button();
 		mainMenuButton.setText("Main Menu");
-		BorderPane.setAlignment(mainMenuButton, Pos.CENTER);
-		mainPane.setBottom(mainMenuButton);
+		leftVBox.getChildren().add(mainMenuButton);
 		
 		mainMenuButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			
@@ -198,9 +214,61 @@ public class ViewEntriesScreen extends SceneHandler
 		{
 			if(entries.get(i).getDate().toString().equals(date))
 			{
-				entryView.setText(entries.get(i).getText());
-				return;
+				Entry entry = entries.get(i);
+				if(lambdaMap.containsKey(entry.getClass().getSimpleName()))
+				{
+					lambdaMap.get(entry.getClass().getSimpleName()).accept(entry);
+          return; 
+				}
 			}
 		}
 	}
+	
+	/**
+	 * Method used to instantiate out HashMap of Lambdas
+	 */
+	private void makeLambdaMap()
+	{
+		lambdaMap = new HashMap<String, Consumer<Entry>>();
+		
+		Consumer<Entry> basic = entry -> makeBasicEntryDisplay(entry);
+		lambdaMap.put(BasicEntry.class.getSimpleName(), basic);
+		
+		Consumer<Entry> image = entry -> makeImageEntryDisplay(entry);
+		lambdaMap.put(ImageEntry.class.getSimpleName(),image);
+		
+		Consumer<Entry> video = entry ->makeVideoEntryDisplay(entry);
+		lambdaMap.put(VideoEntry.class.getSimpleName(), video);
+		
+		
+	}
+	
+	/**
+	 * Method used to prepare the right side to display a basic Entry
+	 * @param entry The basic entry to display
+	 */
+	private void makeBasicEntryDisplay(Entry entry)
+	{
+		BasicEntry bEntry = (BasicEntry)entry; 
+	}
+	
+	/**
+	 * Method used to prepare the right side to display a image Entry
+	 * @param entry The image entry to display
+	 */
+	private void makeImageEntryDisplay(Entry entry)
+	{
+		ImageEntry iEntry = (ImageEntry)entry;
+	}
+	
+	/**
+	 * Method used to prepare the right side to display a video Entry
+	 * @param entry The video entry to display
+	 */
+	private void makeVideoEntryDisplay(Entry entry)
+	{
+		VideoEntry vEntry = (VideoEntry) entry; 
+	}
+
+	
 }

@@ -2,15 +2,26 @@ package v1;
 
 import java.util.ArrayList; 
 import java.util.Date;
-import java.util.List; 
+import java.util.List;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.time.Clock;
 import java.time.LocalDateTime; 
 import java.time.format.DateTimeFormatter; 
 import java.time.ZoneId;
 
 
-public class User 
+public class User implements Serializable 
 {
+	
+	private static final String FILE_PATH = "Assets\\UserData.data"; 
+	
+	private static final long serialVersionUID = 1L; 
 	private String name;
 	private String dateOfBirth; 
 	private String gender; 
@@ -111,6 +122,94 @@ public class User
 	public int getNumberofDiaryEntrees()
 	{
 		return diary.numberOfEntries();
+	}
+	
+	public static void serializeData(User data)
+	{
+		FileOutputStream fs = null;
+		ObjectOutputStream os = null; 
+		
+		try
+		{
+			fs = new FileOutputStream(FILE_PATH);
+			os = new ObjectOutputStream(fs);
+			os.writeObject(data);
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace(); 
+			return; 
+		}
+		
+		finally
+		{
+			try
+			{
+				os.close(); 
+				fs.close(); 
+			}
+			
+			catch(IOException e)
+			{
+				System.out.println(e.getMessage());
+			}
+		}
+	}
+	
+	public static User deserializeData()
+	{
+		FileInputStream fs = null; 
+		ObjectInputStream os = null; 
+		
+		try
+		{
+			fs = new FileInputStream(FILE_PATH);
+			os = new ObjectInputStream(fs);
+			
+			return (User)os.readObject();
+		}
+		
+		catch(ClassNotFoundException e)
+		{
+			System.out.println("Can't read old serialized object. Returning Null");
+			return null; 
+		}
+		
+		catch(FileNotFoundException e)
+		{
+			System.out.println("User data file not found. Returning Null");
+			
+			return null; 
+		}
+		
+		catch(IOException e)
+		{
+			System.out.println("IOException occurred during deserialization. Returning null");
+			e.printStackTrace();
+			return null; 
+		}
+		
+		finally
+		{
+			try
+			{
+				if(os != null)
+				{
+					os.close(); 
+				}
+				
+				if(fs != null)
+				{
+					fs.close(); 
+				}
+			}
+			
+			catch(IOException e)
+			{
+				System.out.println("Something else is happening here.");
+				System.out.println(e.getMessage());
+			}
+		}
 	}
 	
 	
