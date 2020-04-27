@@ -28,7 +28,6 @@ import javafx.scene.web.WebView;
  * Class used to handle the scene for our ViewEntriesScreen
  * @author Matt Williams
  * @version 3.25.2020
- *
  */
 
 public class ViewEntriesScreen extends SceneHandler
@@ -219,8 +218,8 @@ public class ViewEntriesScreen extends SceneHandler
 				if(lambdaMap.containsKey(entry.getClass().getSimpleName()))
 				{
 					lambdaMap.get(entry.getClass().getSimpleName()).accept(entry);
+          return; 
 				}
-				
 			}
 		}
 	}
