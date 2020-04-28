@@ -19,7 +19,7 @@ public class BasicEntry extends Entry implements Serializable {
 		super();
 	}
 	
-	public BasicEntry(String entry, LocalDateTime date)
+	public BasicEntry(String text, LocalDateTime date)
 
 	{
 		super(text, date);

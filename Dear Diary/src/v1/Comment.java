@@ -1,5 +1,6 @@
 package v1;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 
@@ -8,7 +9,9 @@ import java.time.LocalDateTime;
  * @author Liam Donovan
  * @version 4.26.2020
  */
-public class Comment {
+public class Comment implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 	private String text;
 	private LocalDateTime date;
 	

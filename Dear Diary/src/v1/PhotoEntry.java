@@ -53,7 +53,7 @@ public class PhotoEntry extends Entry {
 	 * @param imageFileName
 	 */
 	public void setFile(String imageFileName) {
-		imageFile = new File("assets\\" + imageFileName);
+		imageFile = new File("Files\\Images\\" + imageFileName);
 	}
 	
 	/**
@@ -61,5 +61,13 @@ public class PhotoEntry extends Entry {
 	 */
 	public File getFile() {
 		return imageFile;
+	}
+	
+	/**
+	 * Override toString method so The File can be view in WebEngine
+	 */
+	public String toString()
+	{
+		return  "<figure><img src='" + imageFile.toURI() + "' />" + "</figure>";
 	}
 }

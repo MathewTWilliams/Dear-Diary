@@ -50,6 +50,13 @@ public class ViewEntriesScreen extends SceneHandler
 	private WebView entryFeed = new WebView();
 	private WebEngine entryEngine = entryFeed.getEngine(); 
 	
+	private Label commentLabel; 
+	private Label oldCommentsLabel;
+	private TextArea newCommentArea;
+	private TextArea oldCommentsArea;
+	private Button commentButton;
+	private Entry currentEntry;
+	
 	
 	/**
 	 * Basic overriden construction
@@ -85,11 +92,13 @@ public class ViewEntriesScreen extends SceneHandler
 		Scene scene = new Scene(mainPane);
 		setScene(scene);
 		
+		editFeedAndEngine();
+		
 		makeBoxes();
-		setUpLabels();
-		makeListView();
-		makeTextArea(); 
 		setUpButtons();
+		setUpLabels();
+		makeTextAreas(); 
+		makeListView();
 	}
 	
 	/**
@@ -122,14 +131,18 @@ public class ViewEntriesScreen extends SceneHandler
 	/**
 	 * Method use to make our non-editable textArea for our entries to be viewed in.
 	 */
-	private void makeTextArea()
+	private void makeTextAreas()
 	{
 		entryView = new TextArea(); 
-		entryView.setEditable(false);
-		//rightVBox.getChildren().add(entryView);
-		
+		entryView.setEditable(false);		
 		entryView.setMaxSize(400, 400);
 		
+		newCommentArea = new TextArea("Add Comment Here"); 	
+		newCommentArea.setMaxSize(400, 400);
+		
+		oldCommentsArea = new TextArea(); 
+		oldCommentsArea.setEditable(false);		
+		oldCommentsArea.setMaxSize(400, 400);
 	}
 	
 	/**
@@ -147,8 +160,15 @@ public class ViewEntriesScreen extends SceneHandler
 		entriesLabel = new Label("Entries");
 		entriesLabel.setFont(new Font("Arial",15));
 		entriesLabel.setTextFill(Color.BLACK);
-		leftVBox.getChildren().add(entriesLabel);
+		rightVBox.getChildren().add(entriesLabel);
 		
+		commentLabel = new Label("Add a Comment to this Entry.");
+		commentLabel.setFont(new Font("Arial",15));
+		commentLabel.setTextFill(Color.BLACK);
+		
+		oldCommentsLabel = new Label("Old comments about this Entry.");
+		oldCommentsLabel.setFont(new Font("Arial",15));
+		oldCommentsLabel.setTextFill(Color.BLACK);
 	}
 	
 	/**
@@ -166,6 +186,24 @@ public class ViewEntriesScreen extends SceneHandler
 			{
 				cleanUpScene(); 
 				getGUIManager().moveToMainMenu();
+			}
+		});
+		
+		commentButton = new Button();
+		commentButton.setText("Add Comment");
+		
+		commentButton.setOnMouseClicked( new EventHandler<MouseEvent>() {
+			
+			public void handle(MouseEvent event)
+			{
+				if(currentEntry != null)
+				{
+					currentEntry.newComment(newCommentArea.getText());
+					if(lambdaMap.containsKey(currentEntry.getClass().getSimpleName()))
+					{
+						lambdaMap.get(currentEntry.getClass().getSimpleName()).accept(currentEntry);
+					}
+				}
 			}
 		});
 	}
@@ -188,8 +226,19 @@ public class ViewEntriesScreen extends SceneHandler
 			dateList.getItems().add(en.getDate().toString());
 		}
 		
-		//set textfield to the first entry
-		changeEntrySelected(entries.get(0).getDate().toString());
+		if(entries.size() > 0)
+		{
+			//set textfield to the first entry
+			changeEntrySelected(entries.get(0).getDate().toString());
+
+			Entry firstEntry = entries.get(0);
+			if(lambdaMap.containsKey(firstEntry.getClass().getSimpleName()))
+			{
+				lambdaMap.get(firstEntry.getClass().getSimpleName()).accept(firstEntry);
+			}
+		}
+		
+		
 		
 		//listen for when the selected value is changed
 		dateList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
@@ -208,6 +257,7 @@ public class ViewEntriesScreen extends SceneHandler
 	 */
 	private void changeEntrySelected(String date)
 	{
+		entryEngine.loadContent("");
 		ArrayList<Entry> entries = getGUIManager().getUserData().getUserEntries();
 		
 		for(int i = 0; i < entries.size();i++)
@@ -217,8 +267,9 @@ public class ViewEntriesScreen extends SceneHandler
 				Entry entry = entries.get(i);
 				if(lambdaMap.containsKey(entry.getClass().getSimpleName()))
 				{
+					currentEntry = entry;
 					lambdaMap.get(entry.getClass().getSimpleName()).accept(entry);
-          return; 
+					return; 
 				}
 			}
 		}
@@ -235,7 +286,7 @@ public class ViewEntriesScreen extends SceneHandler
 		lambdaMap.put(BasicEntry.class.getSimpleName(), basic);
 		
 		Consumer<Entry> image = entry -> makeImageEntryDisplay(entry);
-		lambdaMap.put(ImageEntry.class.getSimpleName(),image);
+		lambdaMap.put(PhotoEntry.class.getSimpleName(),image);
 		
 		Consumer<Entry> video = entry ->makeVideoEntryDisplay(entry);
 		lambdaMap.put(VideoEntry.class.getSimpleName(), video);
@@ -250,6 +301,10 @@ public class ViewEntriesScreen extends SceneHandler
 	private void makeBasicEntryDisplay(Entry entry)
 	{
 		BasicEntry bEntry = (BasicEntry)entry; 
+		rightVBox.getChildren().remove(1, rightVBox.getChildren().size());
+		rightVBox.getChildren().add(entryView);
+		entryView.setText(bEntry.getText());
+		addRightVBoxBottom(entry);
 	}
 	
 	/**
@@ -258,7 +313,13 @@ public class ViewEntriesScreen extends SceneHandler
 	 */
 	private void makeImageEntryDisplay(Entry entry)
 	{
-		ImageEntry iEntry = (ImageEntry)entry;
+		PhotoEntry iEntry = (PhotoEntry)entry;
+		rightVBox.getChildren().remove(1, rightVBox.getChildren().size());
+		rightVBox.getChildren().addAll(entryFeed,entryView);
+		entryView.setText(iEntry.getText());
+		entryEngine.loadContent(iEntry.toString());
+		addRightVBoxBottom(entry);
+		
 	}
 	
 	/**
@@ -268,7 +329,49 @@ public class ViewEntriesScreen extends SceneHandler
 	private void makeVideoEntryDisplay(Entry entry)
 	{
 		VideoEntry vEntry = (VideoEntry) entry; 
+		rightVBox.getChildren().remove(1, rightVBox.getChildren().size());
+		rightVBox.getChildren().addAll(entryFeed,entryView);
+		entryView.setText(vEntry.getText());
+		entryEngine.loadContent(vEntry.toString());
+		addRightVBoxBottom(entry);
 	}
 
+	
+	/**
+	 * Method used to edit our WebView and Engine to prepare for viewing images and videos
+	 */
+	private void editFeedAndEngine()
+	{
+		entryFeed.setPrefHeight(300);
+		entryFeed.setPrefWidth(300);
+		entryEngine.setUserStyleSheetLocation("data:,body { font: 10px Arial; }");
+	}
+	
+	/**
+	 * Method used after the rightVBox of the scene has been edited.
+	 * This method adds the bottom that is to be added no matter what.
+	 * @param entry the entry clicked on
+	 */
+	private void addRightVBoxBottom(Entry entry)
+	{	
+		rightVBox.getChildren().addAll(oldCommentsLabel,oldCommentsArea);
+		ArrayList<Comment> comments = entry.getComments();
+		
+		String commentText = "";
+		for(Comment c : comments)
+		{
+			commentText = commentText + 
+						  c.getDate().toString() + 
+						  "\n" + 
+						  c.getText() +
+						  "\n"; 
+		}
+		
+		oldCommentsArea.setText(commentText);
+		
+		newCommentArea.setText("Add a comment here");
+		
+		rightVBox.getChildren().addAll(commentLabel,newCommentArea, commentButton);
+	}
 	
 }

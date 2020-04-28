@@ -53,7 +53,7 @@ public class VideoEntry extends Entry {
 	 * @param videoFileName
 	 */
 	public void setFile(String videoFileName) {
-		videoFile = new File("assets\\" + videoFileName);
+		videoFile = new File("Files\\Videos\\" + videoFileName);
 	}
 	
 	/**
@@ -61,5 +61,16 @@ public class VideoEntry extends Entry {
 	 */
 	public File getFile() {
 		return videoFile;
+	}
+	
+	/**
+	 * Override the toString method so the Video can be displayed in the WebView
+	 */
+	public String toString()
+	{
+		return 	   " <video width='300' autoplay>" +
+				   "<source src ='" + videoFile.toURI() + 
+				   "' type='video/mp4' />" +
+				   "Your browser does not support the video element.</video>";
 	}
 }

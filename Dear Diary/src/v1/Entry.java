@@ -2,6 +2,7 @@ package v1;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 
 /**
@@ -18,10 +19,13 @@ public abstract class Entry implements Serializable
 	
 	protected String text; //as entry or a caption for photo, video
 	protected LocalDateTime date; 
-  protected ArrayList<Comment> comments; 
+	protected ArrayList<Comment> comments; 
+	
+	private static final String TIME_ZONE = "America/New_York";
+	
 	public Entry()
 	{
-		userEntry = ""; 
+		text = "";
 		date = LocalDateTime.now();
 	}
 	
@@ -78,7 +82,7 @@ public abstract class Entry implements Serializable
 	 * @param text
 	 */
 	public void newComment(String text) {
-		comments.add(new Comment(text, LocalDateTime.now()));
+		comments.add(new Comment(text, LocalDateTime.now(ZoneId.of(TIME_ZONE))));
 	}
 	
 	/**
