@@ -35,6 +35,8 @@ import javafx.scene.chart.XYChart.Data;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.Random;
 import java.util.Set;
 import java.io.BufferedReader;
@@ -47,7 +49,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.time.LocalDate; 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 /**
@@ -75,7 +78,11 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 	private BorderPane mainPane;
 	private BorderPane centerSubPane;
 	private HBox descriptionBox;
-
+	
+	/**Logger for Login GUI, will help with any logging issues within the application*/
+	private final static Logger LOGGER =  
+            Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public TrackStatGUI(GUIManager manager) throws Exception 
 	{
@@ -204,6 +211,7 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 							oos.close();
 							fos.close();
 							System.out.printf("Serialized HashMap data is saved in hashmap.ser");
+							LOGGER.log(Level.INFO, "User inputted stat for " + trackerTable.get(statChoiceBox.getValue()).toString().substring('.', '@') + " at " + LocalDateTime.now());
 						}catch(IOException ioe)
 						{
 							ioe.printStackTrace();
@@ -211,9 +219,11 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 						System.out.println("success");
 					}
 					else {
+						LOGGER.log(Level.INFO, "User may have submitted two stats for the same field in one day");
 						statTextField.setText("Invalid input");
 					}
-				}catch(NumberFormatException e){
+				} catch(NumberFormatException e) {
+					LOGGER.log(Level.WARNING, "User inputted invalid input for tracker stat at " + LocalDateTime.now());
 					statTextField.setText("Invalid input");
 				}
 			}

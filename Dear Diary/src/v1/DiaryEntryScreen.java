@@ -1,6 +1,10 @@
 package v1;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -30,6 +34,9 @@ public class DiaryEntryScreen extends SceneHandler {
 	private Button submitButton;
 	private Button backButton;
 	
+	/**Logger for GUI, will help with any logging issues within the application*/
+	private final static Logger LOGGER =  
+            Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	/**
 	 * Basic overloaded constructor
@@ -80,6 +87,7 @@ public class DiaryEntryScreen extends SceneHandler {
 			
 			public void handle(MouseEvent event)
 			{
+		        LOGGER.log(Level.INFO, "New Text Entry Logged at " + LocalDateTime.now());
 				cleanUpScene();
 				getGUIManager().moveToMainMenu();
 			}

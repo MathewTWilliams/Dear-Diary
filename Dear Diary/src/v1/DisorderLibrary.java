@@ -1,11 +1,12 @@
 package v1;
-import java.io.BufferedReader;
+import java.io.BufferedReader; 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
@@ -16,7 +17,6 @@ import java.util.stream.Collectors;
 public class DisorderLibrary {
 
 	protected static ArrayList<Disorder> disorders;
-	
 	
 	/**
 	 * Constructor instantiates the ArrayList
@@ -82,6 +82,7 @@ public class DisorderLibrary {
 		String disorderName = null;
 		String description = null;
 		ArrayList<String> symptoms = null;
+		ArrayList<String> tips = null;
 
 		
 		while ((line = br.readLine()) != null) {
@@ -105,16 +106,21 @@ public class DisorderLibrary {
 				List<String> fixedLengthList = Arrays.asList(elements);
 				ArrayList<String> listOfString = new ArrayList<String>(fixedLengthList);
 				ArrayList<String> trimmedStrings = (ArrayList<String>) listOfString.stream().map(String::trim).collect(Collectors.toList());
-				for (String x: trimmedStrings) {
-					System.out.println(x);
-				}
-				Disorder x = new Disorder(disorderName, description, symptoms);
-				DisorderLibrary.addDisorder(x); 
-			} 
-
+				symptoms = trimmedStrings;
+			} else if (line.contains("Tips: ")) {
+				int startIndex = line.indexOf(":");
+				int endIndex = line.length();
+				String tipString = line.substring(startIndex+1, endIndex);
+				String[] elements2 = tipString.split(" -- ");
+				List<String> fixedLengthList2 = Arrays.asList(elements2);
+				ArrayList<String> listOfString2 = new ArrayList<String>(fixedLengthList2);
+				ArrayList<String> trimmedStrings2 = (ArrayList<String>) listOfString2.stream().map(String::trim).collect(Collectors.toList());
+				tips = trimmedStrings2;
+				Disorder x = new Disorder(disorderName, description, symptoms, tips);
+				disorders.add(x);
+			}
+			
 		}
-
-
 	}
 	
 	/**
@@ -125,4 +131,18 @@ public class DisorderLibrary {
 	private static String format(String inputString) {
 		return inputString.replaceAll("\\s", "").toLowerCase().trim();
 	}
+	
+	/** CONTINUE OFF HERE
+	 * Method returns a random tip depending on the disorder
+	 * @param disorder Disorder of the tips being searched
+	 * @return One random tip for the particular disorder
+	 */
+	/**
+	
+	protected String newRandomTip() {
+		Random rand = new Random();
+		int index = rand.nextInt(Tips.getTipsOfDisord(disorder).size());
+		return Tips.getTipsOfDisord(disorder).get(index);
+	}
+	*/
 }

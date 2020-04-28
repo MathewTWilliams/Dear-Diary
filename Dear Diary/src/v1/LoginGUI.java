@@ -3,9 +3,15 @@ package v1;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.Year;
 import java.time.ZoneId;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+
+import javax.swing.JOptionPane;
 
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -35,6 +41,10 @@ public class LoginGUI extends SceneHandler {
 	private BorderPane centerSubPane;
 	private Button submitButton;
 	
+	/**Logger for Login GUI, will help with any logging issues within the application*/
+	private final static Logger LOGGER =  
+            Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	
 	/**
 	 * Basic Overriden Constructor
 	 * @param manager The GUI manager to make callbacks to. 
@@ -42,8 +52,6 @@ public class LoginGUI extends SceneHandler {
 	public LoginGUI(GUIManager manager)
 	{
 		super(manager);
-		
-	
 	}
 	
 	/**
@@ -73,27 +81,12 @@ public class LoginGUI extends SceneHandler {
 		nameField.getParent().requestFocus();
 		nameField.setMaxWidth(200);
 		BorderPane.setAlignment(nameField, Pos.CENTER_RIGHT);
-		nameField.setOnKeyReleased(new EventHandler<KeyEvent>() {
-			
-			public void handle(KeyEvent event)
-			{
-				tryEnableSubmitButton();
-			}
-		});
-		
 		
 		dobField = new TextField();
 		centerSubPane.setCenter(dobField);
 		dobField.setPromptText("DOB: mm/dd/yyyy");
 		dobField.setMaxWidth(200);
 		BorderPane.setAlignment(dobField, Pos.CENTER);
-		dobField.setOnKeyReleased(new EventHandler<KeyEvent>() {
-			
-			public void handle(KeyEvent event)
-			{
-				tryEnableSubmitButton();
-			}
-		});
 		
 	}
 	
@@ -105,7 +98,6 @@ public class LoginGUI extends SceneHandler {
 		//submit button
 		submitButton = new Button();
 		submitButton.setText("Submit");
-		submitButton.setDisable(true);
 		centerSubPane.setRight(submitButton);
 		BorderPane.setAlignment(submitButton, Pos.CENTER_RIGHT);
 		
@@ -114,26 +106,35 @@ public class LoginGUI extends SceneHandler {
 			
 			public void handle(MouseEvent event)
 			{
-				cleanUpScene();
-				getGUIManager().moveToMainMenu();
+				try {
+					if (isValidName(nameField.getText().toString()) && isValidDate(dobField.getText().toString())) {
+						LOGGER.log(Level.INFO, nameField.getText() + " logged in at " + LocalDateTime.now());
+						cleanUpScene();
+						getGUIManager().moveToMainMenu();
+					} else {
+						throw new InvalidCredentialsException();
+					}
+				} catch (InvalidCredentialsException e) {
+					JOptionPane.showMessageDialog(null, "Name or date not valid", "Input Error", JOptionPane.WARNING_MESSAGE);
+					LOGGER.log(Level.INFO, "Invalid login credentials given at " + LocalDateTime.now());
+				}
 			}
 		});
+		
 		
 	}
 	
 	/**
-	 * Method used by out Button Event handlers to try to enable the submit button after a key is typed
+	 * Method returns whether the name inputted valid or not.
+	 * @param name The name being checked
+	 * @return Whether name is okay or not (as boolean)
 	 */
-	private void tryEnableSubmitButton()
-	{
-		if(!nameField.getText().equals("") && isValidDate(dobField.getText()))
-		{
-			submitButton.setDisable(false);
-		}
-		
-		else
-		{
-			submitButton.setDisable(true);
+	private boolean isValidName(String name) {
+		String regx = "^[\\p{L} .'-]+$";
+		if (!name.matches(regx)) {
+			return false;
+		} else {
+			return true;
 		}
 	}
 	
@@ -144,42 +145,40 @@ public class LoginGUI extends SceneHandler {
 	 */
 	private boolean isValidDate(String date)
 	{
-		String validDateRegex = "[0-9][0-9]\\/[0-9][0-9]\\/[0-9][0-9][0-9][0-9]";
-		String splitRegex = "\\/";
-		
-		String timeZone = "America/New_York";
-		
-		if(!date.matches(validDateRegex))
-		{
-			return false; 
-		}
-		
-		int month = Integer.valueOf(date.split(splitRegex)[0]);
-		int day = Integer.valueOf(date.split(splitRegex)[1]);
-		int year = Integer.valueOf(date.split(splitRegex)[2]);
-		
-		
-		if(month == 0 || month > 12)
-		{
-			return false; 
-		}
+			String validDateRegex = "[0-9][0-9]\\/[0-9][0-9]\\/[0-9][0-9][0-9][0-9]";
+			String splitRegex = "\\/";
 
-		
-		if(day == 0 || day > Month.of(month).length(Year.isLeap(year)))
-		{
-			return false; 
-		}
-		 
-		
-		LocalDate now = LocalDate.now(ZoneId.of(timeZone));
-		LocalDate entered = LocalDate.of(year, month, day);
-		if(entered.isAfter(now))
-		{
-			return false; 
-		}
-		
-		
-		return true; 
+			String timeZone = "America/New_York";
+
+			if(!date.matches(validDateRegex))
+			{
+				return false; 
+			}
+
+			int month = Integer.valueOf(date.split(splitRegex)[0]);
+			int day = Integer.valueOf(date.split(splitRegex)[1]);
+			int year = Integer.valueOf(date.split(splitRegex)[2]);
+
+			if(month == 0 || month > 12)
+			{
+				return false; 
+			}
+
+
+			if(day == 0 || day > Month.of(month).length(Year.isLeap(year)))
+			{
+				return false; 
+			}
+
+			LocalDate now = LocalDate.now(ZoneId.of(timeZone));
+			LocalDate entered = LocalDate.of(year, month, day);
+			if(entered.isAfter(now))
+			{
+				return false; 
+			}
+
+
+			return true; 
 	}
 
 
