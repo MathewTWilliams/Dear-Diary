@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  */
 public class DisorderLibrary {
 
-	protected static ArrayList<Disorder> disorders;
+	protected ArrayList<Disorder> disorders;
 	
 	/**
 	 * Constructor instantiates the ArrayList
@@ -58,7 +58,7 @@ public class DisorderLibrary {
 	 * Method adds Disorder to Disorder Library
 	 * @param x The disorder being added
 	 */
-	private static void addDisorder(Disorder x) {
+	private void addDisorder(Disorder x) {
 		disorders.add(x);
 	}
 	
@@ -66,7 +66,7 @@ public class DisorderLibrary {
 	 * Method looks through DisorderList.txt file to determine and add disorders to the program
 	 * @throws IOException If file cannot be found.
 	 */
-	public static void collectDisorders() throws IOException {
+	private void collectDisorders() throws IOException {
 
 		//Text File being used to store disorders in
 		String filename = "DisorderList.txt";
@@ -119,7 +119,6 @@ public class DisorderLibrary {
 				Disorder x = new Disorder(disorderName, description, symptoms, tips);
 				disorders.add(x);
 			}
-			
 		}
 	}
 	

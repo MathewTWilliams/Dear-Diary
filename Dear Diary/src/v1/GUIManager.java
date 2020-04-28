@@ -74,7 +74,10 @@ public class GUIManager extends Application {
 	@Override
 	public void stop()
 	{
-		User.serializeData(userData);
+		if(!userData.getName().equals(""))
+		{
+			User.serializeData(userData);
+		}
 	}
 	
 

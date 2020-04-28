@@ -1,6 +1,8 @@
 package v1;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.function.Consumer;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -15,30 +17,45 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 //This is a test
 /**
  * Class used to handle the scene for our ViewEntriesScreen
  * @author Matt Williams
  * @version 3.25.2020
- *
  */
 
 public class ViewEntriesScreen extends SceneHandler
 {
 	
-	private BorderPane mainPane; 
+	private VBox mainPane; // root pane
+	private HBox subPane;  // child of root
 	private ListView<String> dateList; 
 	private TextArea entryView;
 	private Label datesLabel;
 	private Label entriesLabel;
 	private Button mainMenuButton;
 	
-	private VBox leftVBox;
-	private VBox rightVBox;
+	private VBox leftVBox; //child of subPane
+	private VBox rightVBox; //child of subPane
 	
+	
+	private HashMap<String, Consumer<Entry>> lambdaMap;
+	
+	private WebView entryFeed = new WebView();
+	private WebEngine entryEngine = entryFeed.getEngine(); 
+	
+	private Label commentLabel; 
+	private Label oldCommentsLabel;
+	private TextArea newCommentArea;
+	private TextArea oldCommentsArea;
+	private Button commentButton;
+	private Entry currentEntry;
 	
 	
 	/**
@@ -48,6 +65,8 @@ public class ViewEntriesScreen extends SceneHandler
 	public ViewEntriesScreen(GUIManager manager) 
 	{
 		super(manager);
+		makeLambdaMap(); 
+	
 	}
 	
 	/**
@@ -66,54 +85,64 @@ public class ViewEntriesScreen extends SceneHandler
 	@Override
 	protected void prepareScene() 
 	{
-		mainPane = new BorderPane();
+		mainPane = new VBox();
+		mainPane.setAlignment(Pos.TOP_CENTER);
 		mainPane.setPadding(new Insets(10,10,10,10));
 		mainPane.setStyle("-fx-background-color : GREY");
 		Scene scene = new Scene(mainPane);
 		setScene(scene);
 		
-		makeVBoxes();
-		setUpLabels();
-		makeTextArea(); 
+		editFeedAndEngine();
+		
+		makeBoxes();
 		setUpButtons();
+		setUpLabels();
+		makeTextAreas(); 
 		makeListView();
 	}
 	
 	/**
 	 * Method used to Make the Vertical Boxes for the View Entries Screen.
 	 */
-	private void makeVBoxes()
+	private void makeBoxes()
 	{
+		subPane = new HBox(); 
 		leftVBox = new VBox();
 		rightVBox = new VBox();
 		
+		
+		subPane.setPadding(new Insets(10,10,10,10));
 		leftVBox.setPadding(new Insets(10,10,10,10));
 		rightVBox.setPadding(new Insets(10,10,10,10));
 		
-		leftVBox.setAlignment(Pos.CENTER);
-		rightVBox.setAlignment(Pos.CENTER);
+		subPane.setAlignment(Pos.TOP_CENTER);
+		leftVBox.setAlignment(Pos.TOP_CENTER);
+		rightVBox.setAlignment(Pos.TOP_CENTER);
 		
+		subPane.setSpacing(20);
 		leftVBox.setSpacing(20);
 		rightVBox.setSpacing(20);
 		
-		BorderPane.setAlignment(leftVBox, Pos.CENTER);
-		BorderPane.setAlignment(rightVBox, Pos.CENTER);
-		
-		mainPane.setLeft(leftVBox);
-		mainPane.setRight(rightVBox);
+
+		mainPane.getChildren().add(subPane);
+		subPane.getChildren().addAll(leftVBox,rightVBox);
 	}
 	
 	/**
 	 * Method use to make our non-editable textArea for our entries to be viewed in.
 	 */
-	private void makeTextArea()
+	private void makeTextAreas()
 	{
 		entryView = new TextArea(); 
-		entryView.setEditable(false);
-		rightVBox.getChildren().add(entryView);
-		
+		entryView.setEditable(false);		
 		entryView.setMaxSize(400, 400);
 		
+		newCommentArea = new TextArea("Add Comment Here"); 	
+		newCommentArea.setMaxSize(400, 400);
+		
+		oldCommentsArea = new TextArea(); 
+		oldCommentsArea.setEditable(false);		
+		oldCommentsArea.setMaxSize(400, 400);
 	}
 	
 	/**
@@ -121,7 +150,7 @@ public class ViewEntriesScreen extends SceneHandler
 	 */
 	private void setUpLabels()
 	{
-		mainPane.setTop(getTitle());
+		mainPane.getChildren().add(0, getTitle());
 		
 		datesLabel = new Label("Date and Time of Entries");
 		datesLabel.setFont( new Font("Arial",15));
@@ -133,6 +162,13 @@ public class ViewEntriesScreen extends SceneHandler
 		entriesLabel.setTextFill(Color.BLACK);
 		rightVBox.getChildren().add(entriesLabel);
 		
+		commentLabel = new Label("Add a Comment to this Entry.");
+		commentLabel.setFont(new Font("Arial",15));
+		commentLabel.setTextFill(Color.BLACK);
+		
+		oldCommentsLabel = new Label("Old comments about this Entry.");
+		oldCommentsLabel.setFont(new Font("Arial",15));
+		oldCommentsLabel.setTextFill(Color.BLACK);
 	}
 	
 	/**
@@ -142,8 +178,7 @@ public class ViewEntriesScreen extends SceneHandler
 	{
 		mainMenuButton = new Button();
 		mainMenuButton.setText("Main Menu");
-		BorderPane.setAlignment(mainMenuButton, Pos.CENTER);
-		mainPane.setBottom(mainMenuButton);
+		leftVBox.getChildren().add(mainMenuButton);
 		
 		mainMenuButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			
@@ -151,6 +186,24 @@ public class ViewEntriesScreen extends SceneHandler
 			{
 				cleanUpScene(); 
 				getGUIManager().moveToMainMenu();
+			}
+		});
+		
+		commentButton = new Button();
+		commentButton.setText("Add Comment");
+		
+		commentButton.setOnMouseClicked( new EventHandler<MouseEvent>() {
+			
+			public void handle(MouseEvent event)
+			{
+				if(currentEntry != null)
+				{
+					currentEntry.newComment(newCommentArea.getText());
+					if(lambdaMap.containsKey(currentEntry.getClass().getSimpleName()))
+					{
+						lambdaMap.get(currentEntry.getClass().getSimpleName()).accept(currentEntry);
+					}
+				}
 			}
 		});
 	}
@@ -173,8 +226,19 @@ public class ViewEntriesScreen extends SceneHandler
 			dateList.getItems().add(en.getDate().toString());
 		}
 		
-		//set textfield to the first entry
-		changeEntrySelected(entries.get(0).getDate().toString());
+		if(entries.size() > 0)
+		{
+			//set textfield to the first entry
+			changeEntrySelected(entries.get(0).getDate().toString());
+
+			Entry firstEntry = entries.get(0);
+			if(lambdaMap.containsKey(firstEntry.getClass().getSimpleName()))
+			{
+				lambdaMap.get(firstEntry.getClass().getSimpleName()).accept(firstEntry);
+			}
+		}
+		
+		
 		
 		//listen for when the selected value is changed
 		dateList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
@@ -193,15 +257,121 @@ public class ViewEntriesScreen extends SceneHandler
 	 */
 	private void changeEntrySelected(String date)
 	{
+		entryEngine.loadContent("");
 		ArrayList<Entry> entries = getGUIManager().getUserData().getUserEntries();
 		
 		for(int i = 0; i < entries.size();i++)
 		{
 			if(entries.get(i).getDate().toString().equals(date))
 			{
-				entryView.setText(entries.get(i).getUserEntry());
-				return;
+				Entry entry = entries.get(i);
+				if(lambdaMap.containsKey(entry.getClass().getSimpleName()))
+				{
+					currentEntry = entry;
+					lambdaMap.get(entry.getClass().getSimpleName()).accept(entry);
+					return; 
+				}
 			}
 		}
 	}
+	
+	/**
+	 * Method used to instantiate out HashMap of Lambdas
+	 */
+	private void makeLambdaMap()
+	{
+		lambdaMap = new HashMap<String, Consumer<Entry>>();
+		
+		Consumer<Entry> basic = entry -> makeBasicEntryDisplay(entry);
+		lambdaMap.put(BasicEntry.class.getSimpleName(), basic);
+		
+		Consumer<Entry> image = entry -> makeImageEntryDisplay(entry);
+		lambdaMap.put(PhotoEntry.class.getSimpleName(),image);
+		
+		Consumer<Entry> video = entry ->makeVideoEntryDisplay(entry);
+		lambdaMap.put(VideoEntry.class.getSimpleName(), video);
+		
+		
+	}
+	
+	/**
+	 * Method used to prepare the right side to display a basic Entry
+	 * @param entry The basic entry to display
+	 */
+	private void makeBasicEntryDisplay(Entry entry)
+	{
+		BasicEntry bEntry = (BasicEntry)entry; 
+		rightVBox.getChildren().remove(1, rightVBox.getChildren().size());
+		rightVBox.getChildren().add(entryView);
+		entryView.setText(bEntry.getText());
+		addRightVBoxBottom(entry);
+	}
+	
+	/**
+	 * Method used to prepare the right side to display a image Entry
+	 * @param entry The image entry to display
+	 */
+	private void makeImageEntryDisplay(Entry entry)
+	{
+		PhotoEntry iEntry = (PhotoEntry)entry;
+		rightVBox.getChildren().remove(1, rightVBox.getChildren().size());
+		rightVBox.getChildren().addAll(entryFeed,entryView);
+		entryView.setText(iEntry.getText());
+		entryEngine.loadContent(iEntry.toString());
+		addRightVBoxBottom(entry);
+		
+	}
+	
+	/**
+	 * Method used to prepare the right side to display a video Entry
+	 * @param entry The video entry to display
+	 */
+	private void makeVideoEntryDisplay(Entry entry)
+	{
+		VideoEntry vEntry = (VideoEntry) entry; 
+		rightVBox.getChildren().remove(1, rightVBox.getChildren().size());
+		rightVBox.getChildren().addAll(entryFeed,entryView);
+		entryView.setText(vEntry.getText());
+		entryEngine.loadContent(vEntry.toString());
+		addRightVBoxBottom(entry);
+	}
+
+	
+	/**
+	 * Method used to edit our WebView and Engine to prepare for viewing images and videos
+	 */
+	private void editFeedAndEngine()
+	{
+		entryFeed.setPrefHeight(300);
+		entryFeed.setPrefWidth(300);
+		entryEngine.setUserStyleSheetLocation("data:,body { font: 10px Arial; }");
+	}
+	
+	/**
+	 * Method used after the rightVBox of the scene has been edited.
+	 * This method adds the bottom that is to be added no matter what.
+	 * @param entry the entry clicked on
+	 */
+	private void addRightVBoxBottom(Entry entry)
+	{	
+		rightVBox.getChildren().addAll(oldCommentsLabel,oldCommentsArea);
+		ArrayList<Comment> comments = entry.getComments();
+		
+		String commentText = "";
+		for(Comment c : comments)
+		{
+			commentText = commentText + 
+						  c.getDate().toString() + 
+						  "\n" + 
+						  c.getText() +
+						  "\n"; 
+		}
+		
+		oldCommentsArea.setText(commentText);
+		
+		newCommentArea.setText("Add a comment here");
+		
+		rightVBox.getChildren().addAll(commentLabel,newCommentArea, commentButton);
+	}
+	
 }
