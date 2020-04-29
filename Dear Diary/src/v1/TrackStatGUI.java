@@ -1,5 +1,4 @@
 package v1;
-
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -28,10 +27,13 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.chart.Axis;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.chart.XYChart.Data;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
@@ -51,6 +53,10 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate; 
 import java.time.ZoneId;
 
 /**
@@ -68,7 +74,6 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 	private ChoiceBox<String> statChoiceBox;
 	private Label descriptionLabel;
 	private TextField statTextField;
-	private Text historyText;
 	private ButtonBase showChart;
 	private Button backButton;
 	private ButtonBase submitButton;
@@ -78,16 +83,28 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 	private BorderPane mainPane;
 	private BorderPane centerSubPane;
 	private HBox descriptionBox;
+
 	
 	/**Logger for Login GUI, will help with any logging issues within the application*/
 	private final static Logger LOGGER =  
             Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
+
+	private LineChart<String, Number> lineChart;
+	private XYChart.Series series;
+	private final static Logger LOGGER = Logger.getLogger(TrackStatGUI.class.getName());
+
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public TrackStatGUI(GUIManager manager) throws Exception 
 	{
 		super(manager);
-
+		/*
+		 * Check if a file exists containing trackers, if it doesn't create a new file containing the
+		 * tracker table
+		 * 
+		 * If file exists load the HashMap contents into trackerTable
+		 */
 		if(!new File("Trackers.ser").exists())
 			try{		
 				trackerTable = new HashMap<String, Trackable>();
@@ -99,9 +116,9 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 						new FileOutputStream("Trackers.ser");
 				ObjectOutputStream oos = new ObjectOutputStream(fos);
 				oos.writeObject(trackerTable);
+				LOGGER.info("NO FILE FOUND, CREATING NEW FILE");
 				oos.close();
 				fos.close();
-				System.out.printf("Serialized HashMap data is saved in hashmap.ser");
 			}catch(IOException ioe)
 		{
 				ioe.printStackTrace();
@@ -111,6 +128,7 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 				FileInputStream fis = new FileInputStream("trackers.ser");
 				ObjectInputStream ois = new ObjectInputStream(fis);
 				trackerTable = (HashMap) ois.readObject();
+				LOGGER.info("FILE FOUND, RETRIEVING TRACKERS");
 				ois.close();
 				fis.close();
 			}catch(IOException ioe)
@@ -119,7 +137,6 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 				return;
 			}catch(ClassNotFoundException c)
 			{
-				System.out.println("Class not found");
 				c.printStackTrace();
 				return;
 			}
@@ -150,6 +167,9 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 
 
 	}
+	/**
+	 * Method to set up all labels in the GUI
+	 */
 	private void setUpLabels()
 	{
 		chooseTrackerLabel = new Label("Which Statistic would you like to track?");
@@ -161,7 +181,11 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 		descriptionBox.getChildren().add(descriptionLabel);
 
 	}
-
+	
+	/**
+	 * Method to set up the choice box, also adds a listener that will switch various items
+	 * to the new tracker selected
+	 */
 	private void setUpChoiceBox()
 	{
 		statChoiceBox = new ChoiceBox<String>(); 
@@ -176,7 +200,10 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 			}
 		});
 	}
-
+	
+	/*
+	 * Method to set up the buttons for the GUI
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void setUpButtons()
 	{
@@ -186,7 +213,10 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 
 
 		bottomHBox.getChildren().addAll(submitButton, showChart, backButton);
-
+		
+		/**
+		 * If main menu button is pressed return to the main menu
+		 */
 		backButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
 			public void handle(MouseEvent event)
@@ -196,7 +226,13 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 
 			}
 		});
-
+		/**
+		 * If submit button is pressed get the text from the statTextField and parse it into a integer
+		 * then proceed to input stat into the current tracker selected from the statChoiceBox, if the trackStat
+		 * method returns true write to the Trackers file the updated tracker.
+		 * 
+		 * If false is returned display an invalid input message in the statTextField
+		 */
 		submitButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
 			public void handle(MouseEvent event) {
@@ -208,14 +244,13 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 									new FileOutputStream("Trackers.ser");
 							ObjectOutputStream oos = new ObjectOutputStream(fos);
 							oos.writeObject(trackerTable);
+							statTextField.setText("Stat Recorded");
 							oos.close();
 							fos.close();
-							System.out.printf("Serialized HashMap data is saved in hashmap.ser");
 						}catch(IOException ioe)
 						{
 							ioe.printStackTrace();
 						}
-						System.out.println("success");
 					}
 					else {
 						LOGGER.log(Level.INFO, "User may have submitted two stats for the same field in one day");
@@ -228,22 +263,30 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 			}
 		});
 		
+		/**
+		 * If the view history button is pressed retrieve the HashMap from the tracker file and fill an xy series
+		 * from the information in the collection. Then populate the lineChart with the new series
+		 * 
+		 * If the tracker does not contain any information a blank line chart will appear
+		 */
 		showChart.setOnMouseClicked(new EventHandler<MouseEvent>(){
-			
+
 			public void handle(MouseEvent event) {
 				try{
 					FileInputStream fis = new FileInputStream("trackers.ser");
 					ObjectInputStream ois = new ObjectInputStream(fis);
 					trackerTable = (HashMap) ois.readObject();
-					String textForHistory = "";
-					for(String key : trackerTable.keySet()) {
-						HashMap<String, Integer> stats = trackerTable.get(key).getStat();
-						
-						for(String statKey : stats.keySet()) {
-							textForHistory += (stats.get(statKey)+ " " + key + "\n");
+					series = new XYChart.Series();
+					series.setName("My " + statChoiceBox.getValue());
+					if(trackerTable.get(statChoiceBox.getValue()).getStat() != null){
+						HashMap<String, Integer> cpStats = trackerTable.get(statChoiceBox.getValue()).getStat();
+						for(String key : cpStats.keySet()) {
+							int stat = cpStats.get(key);
+							series.getData().add(new XYChart.Data(key, stat));
 						}
+						LOGGER.info("LINE CHART BEING FILLED");
+						lineChart.getData().add(series);
 					}
-					historyText.setText(textForHistory);
 					ois.close();
 					fis.close();
 				}catch(IOException ioe)
@@ -255,6 +298,7 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 					c.printStackTrace();
 					return;
 				}
+				showChart.setDisable(true);
 			}
 		});
 
@@ -272,15 +316,31 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 
 		if(trackerToChange.equals("Mood Tracker")) {
 			descriptionLabel.setText("What is your mood 1-10");
+			lineChart.getData().clear();
+			lineChart.setTitle("Mood Tracker");
+			showChart.setDisable(false);
+			LOGGER.info("Switching Trackers");
 		}
 		else if(trackerToChange.equals("Sleep Tracker")) {
 			descriptionLabel.setText("How many hours did you sleep?");
+			lineChart.getData().clear();
+			lineChart.setTitle("Exercise Tracker");
+			showChart.setDisable(false);
+			LOGGER.info("Switching Trackers");
 		}
 		else if(trackerToChange.equals("Exercise Tracker")) {
 			descriptionLabel.setText("How long did you work out today?");
+			lineChart.getData().clear();
+			lineChart.setTitle("Exercise Tracker");
+			showChart.setDisable(false);
+			LOGGER.info("Switching Trackers");
 		}
 		else if(trackerToChange.equals("Diet Tracker")) {
 			descriptionLabel.setText("About how many calories did you eat today?");
+			lineChart.getData().clear();
+			lineChart.setTitle("Diet Tracker");
+			showChart.setDisable(false);
+			LOGGER.info("Switching Trackers");
 		}
 
 		statTextField.clear();
@@ -295,15 +355,11 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 		mainPane = new BorderPane(); 
 		String mainPaneColor = "-fx-background-color: rgba(255, 255, 153, 0.5);";
 		mainPane.setStyle(mainPaneColor);
-		historyText = new Text();
-		historyText.setFont(new Font(15));
 		centerSubPane = new BorderPane(); 
 		centerSubPane.setPadding(new Insets(10,10,10,10));
 		BorderPane.setAlignment(centerSubPane, Pos.CENTER);
 		mainPane.setCenter(centerSubPane);
-		
-		BorderPane.setAlignment(historyText, Pos.CENTER);
-		centerSubPane.setCenter(historyText);
+
 
 		header = new VBox();
 		header.setPadding(new Insets(10,10,10,10));
@@ -313,13 +369,13 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 		header.setAlignment(Pos.TOP_CENTER);
 		BorderPane.setAlignment(header, Pos.CENTER);
 		mainPane.setTop(header);
-		
+
 		descriptionBox = new HBox();
 		descriptionBox.setPadding(new Insets(10,20,20,20));
 		descriptionBox.setAlignment(Pos.CENTER);
 		BorderPane.setAlignment(descriptionBox, Pos.CENTER);
 		centerSubPane.setBottom(descriptionBox);
-		
+
 
 		bottomHBox = new HBox();
 		bottomHBox.setPadding(new Insets(30,10,10,10));
@@ -329,6 +385,15 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 		BorderPane.setAlignment(bottomHBox,Pos.CENTER);
 		mainPane.setBottom(bottomHBox);
 
+		final CategoryAxis xAxis = new CategoryAxis();
+		final NumberAxis yAxis = new NumberAxis();
+		xAxis.setLabel("Date");
+		lineChart = new LineChart<String,Number>(xAxis,yAxis);
+		lineChart.setPrefSize(500, 500);
+		lineChart.setMinSize(450, 450);
+		lineChart.setMaxSize(700, 700);
+		BorderPane.setAlignment(lineChart, Pos.CENTER);
+		centerSubPane.setCenter(lineChart);
 
 	}
 	/**
@@ -341,7 +406,7 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 		statTextField.setPromptText("Enter stat here");
 		statTextField.setMaxWidth(200);
 		bottomHBox.getChildren().add(0, statTextField);
-		
+
 
 	}
 }

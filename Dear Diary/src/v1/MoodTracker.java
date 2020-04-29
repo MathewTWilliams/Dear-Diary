@@ -5,7 +5,12 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-
+/**
+ * A class to track mood stats, currently only contains ability to track stats. 
+ * @author Julian Pino
+ * @version 4/29/2020
+ *
+ */
 public class MoodTracker implements Trackable, Serializable{
 
 
@@ -16,7 +21,11 @@ public class MoodTracker implements Trackable, Serializable{
 	public MoodTracker() {
 		dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 	}
-	
+	/**
+	 * Method to add to tracked stats collection
+	 * @param stat rating on mood for the day
+	 * @return boolean true if successfully input, false otherwise
+	 */
 	public  boolean trackStat(int stat) {
 		Date date = new Date();
 		String currentDate = dateFormat.format(date);
@@ -26,7 +35,10 @@ public class MoodTracker implements Trackable, Serializable{
 		}
 		return false;
 	}
-	
+	/**
+	 * Basic getter to return hashmap
+	 * @return HashMap tracked stats
+	 */
 	public  HashMap<String, Integer> getStat() {
 		return trackedStats;
 	}

@@ -19,6 +19,7 @@ public class Tracker {
 			trackedStats.put(currentDate, Stat);
 			return true;
 		}
+		
 		return false;
 	}
 	
