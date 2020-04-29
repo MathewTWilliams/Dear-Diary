@@ -82,6 +82,7 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 	private BorderPane centerSubPane;
 	private HBox descriptionBox;
 	private LineChart<String, Number> lineChart;
+	@SuppressWarnings("rawtypes")
 	private XYChart.Series series;
 	private final static Logger LOGGER = Logger.getLogger(TrackStatGUI.class.getName());
 
