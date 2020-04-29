@@ -1,6 +1,5 @@
 package v1;
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.ArrayList; 
 
 /**
  * Class Disorder defines the characteristics of each disorder
@@ -11,6 +10,7 @@ public class Disorder {
 	private String name;
 	private String description;
 	private ArrayList<String> symptoms;
+	private ArrayList<String> tips;
 	
 	/**
 	 * Constructor defines name and description of disorder
@@ -18,14 +18,14 @@ public class Disorder {
 	 * @param description Description of the disorder
 	 * @param symptoms Symptoms of disorder
 	 */
-	public Disorder(String name, String description, ArrayList<String> symptoms) {
+	public Disorder(String name, String description, ArrayList<String> symptoms, ArrayList<String> tips) {
 		this.name = name;
 		this.description = description;
 		this.symptoms = symptoms;
+		this.tips = tips;
 	}
 	
-	//////////////////////////////////////////////////////////////
-	//Standard Getters and Setters
+	//Standard Getters and Setters//
 	
 	public String getName() {
 		return name;
@@ -39,33 +39,9 @@ public class Disorder {
 		return symptoms;
 	}
 	
+	public ArrayList<String> getTips(){
+		return tips;
+	}
+	
 	////////////////////////////////////////////////////////
-	
-	/**
-	 * Method returns an ArrayList of Tips dependent on disorder user inputs
-	 * @param disorder The disorder searched for
-	 * @return Tips of a particular disorder
-	 */
-	protected ArrayList<String> getTips(String disorder){
-		return Tips.getTipsOfDisord(disorder);
-	}
-	
-	/**
-	 * Method returns the symptoms of the particular disorder
-	 * @return List of all the symptoms of the disorder
-	 */
-	protected ArrayList<String> returnSymps() {
-		return symptoms;
-	}
-	
-	/**
-	 * Method returns a random tip depending on the disorder
-	 * @param disorder Disorder of the tips being searched
-	 * @return One random tip for the particular disorder
-	 */
-	protected String newRandomTip(String disorder) {
-		Random rand = new Random();
-		int index = rand.nextInt(Tips.getTipsOfDisord(disorder).size());
-		return Tips.getTipsOfDisord(disorder).get(index);
-	}
 }
