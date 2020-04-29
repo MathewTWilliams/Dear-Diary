@@ -211,7 +211,6 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 							oos.close();
 							fos.close();
 							System.out.printf("Serialized HashMap data is saved in hashmap.ser");
-							LOGGER.log(Level.INFO, "User inputted stat for " + trackerTable.get(statChoiceBox.getValue()).toString().substring('.', '@') + " at " + LocalDateTime.now());
 						}catch(IOException ioe)
 						{
 							ioe.printStackTrace();
