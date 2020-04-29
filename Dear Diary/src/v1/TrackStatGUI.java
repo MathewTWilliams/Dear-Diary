@@ -2,67 +2,45 @@ package v1;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.Parent;
+
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
-import javafx.scene.control.TextArea;
+
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputControl;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.chart.Axis;
 import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.XYChart.Series;
-import javafx.scene.chart.XYChart.Data;
-
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.Random;
-import java.util.Set;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate; 
-import java.time.ZoneId;
+
 
 /**
  * This class handles the Track Stat Menu for the Application
  * @author Matt Williams
- * @version 3.24.2020
+ * @author Julian Pino
+ * @version 4.29.2020
  *
  */
 
@@ -91,9 +69,13 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 	
 
 	private LineChart<String, Number> lineChart;
-	private XYChart.Series series;
-	private final static Logger LOGGER = Logger.getLogger(TrackStatGUI.class.getName());
+	private XYChart.Series<String,Number> series;
 
+	/**
+	 * Default Constructor
+	 * @param manager The GUIManager instance
+	 * @throws Exception
+	 */
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public TrackStatGUI(GUIManager manager) throws Exception 
@@ -143,14 +125,9 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 		}
 	}
 
-
-
-	@Override
-	protected void cleanUpScene() 
-	{
-		super.cleanUpScene();
-	}
-
+	/**
+	 * Overriden method used to set up the scene before the scene is switched to. 
+	 */
 	@Override
 	protected void prepareScene() 
 	{
@@ -276,13 +253,13 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 					FileInputStream fis = new FileInputStream("trackers.ser");
 					ObjectInputStream ois = new ObjectInputStream(fis);
 					trackerTable = (HashMap) ois.readObject();
-					series = new XYChart.Series();
+					series = new XYChart.Series<String,Number>();
 					series.setName("My " + statChoiceBox.getValue());
 					if(trackerTable.get(statChoiceBox.getValue()).getStat() != null){
 						HashMap<String, Integer> cpStats = trackerTable.get(statChoiceBox.getValue()).getStat();
 						for(String key : cpStats.keySet()) {
 							int stat = cpStats.get(key);
-							series.getData().add(new XYChart.Data(key, stat));
+							series.getData().add(new XYChart.Data<String,Number>(key, stat));
 						}
 						LOGGER.info("LINE CHART BEING FILLED");
 						lineChart.getData().add(series);
@@ -387,6 +364,7 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 
 		final CategoryAxis xAxis = new CategoryAxis();
 		final NumberAxis yAxis = new NumberAxis();
+		xAxis.setAnimated(false);
 		xAxis.setLabel("Date");
 		lineChart = new LineChart<String,Number>(xAxis,yAxis);
 		lineChart.setPrefSize(500, 500);

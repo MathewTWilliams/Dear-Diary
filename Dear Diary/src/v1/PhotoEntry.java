@@ -14,14 +14,21 @@ public class PhotoEntry extends Entry {
 	
 	private String imageFileName;
 	public File imageFile;
-	public String imageFilePath;
 	
+	/**
+	 * Parameterized Constructor
+	 * @param imageFileName The name of the file
+	 * @param entry The text associated with the entry
+	 * @param date The date the entry was made.
+	 */
 	public PhotoEntry(String imageFileName, String entry, LocalDateTime date)
 	{
 		super(entry, date);
 		this.imageFileName = imageFileName;
 		setFile(imageFileName);
 	}
+	
+	//Standard Getters and Setters
 	
 	/**
 	 * @param imageFileName
@@ -36,21 +43,7 @@ public class PhotoEntry extends Entry {
 	public String getImageFileName() {
 		return imageFileName;
 	}
-	
-	/**
-	 * @param imageFilePath
-	 */
-	public void setImageFilePath(String imageFilePath) {
-		this.imageFilePath = imageFilePath;
-	}
-	
-	/**
-	 * @return imageFilePath
-	 */
-	public String getImageFilePath() {
-		return imageFilePath;
-	}
-	
+
 	/**
 	 * @param imageFileName
 	 */

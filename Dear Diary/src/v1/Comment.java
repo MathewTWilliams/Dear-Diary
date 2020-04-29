@@ -15,13 +15,18 @@ public class Comment implements Serializable {
 	private String text;
 	private LocalDateTime date;
 	
-	
+	/**
+	 * Parameterized Constructor
+	 * @param text The text associated with the entry
+	 * @param date The date the entry was made.
+	 */
 	public Comment(String text, LocalDateTime date) {
 		this.text = text;
 		this.date = date;
 	}
 	
 	/**
+	 * Accessor for the date of the entry.
 	 * @return the date
 	 */
 	public LocalDateTime getDate() {
@@ -29,6 +34,7 @@ public class Comment implements Serializable {
 	}
 	
 	/**
+	 * Mutator to set the date
 	 * @param date the date to set
 	 */
 	public void setDate(LocalDateTime date) {
@@ -36,6 +42,7 @@ public class Comment implements Serializable {
 	}
 	
 	/**
+	 * Mutator to set the text associated with the entry.
 	 * @param text
 	 */
 	public void setText(String text) {
@@ -43,6 +50,7 @@ public class Comment implements Serializable {
 	}
 	
 	/**
+	 * Accessor to access the text associated with the entry.
 	 * @return the text
 	 */
 	public String getText() {

@@ -28,7 +28,7 @@ import javafx.scene.web.WebView;
 /**
  * Class used to handle the scene for our ViewEntriesScreen
  * @author Matt Williams
- * @version 3.25.2020
+ * @version 4.28.2020
  */
 
 public class ViewEntriesScreen extends SceneHandler

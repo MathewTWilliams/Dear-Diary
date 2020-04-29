@@ -23,12 +23,20 @@ public abstract class Entry implements Serializable
 	
 	private static final String TIME_ZONE = "America/New_York";
 	
+	/**
+	 * Default Constructor
+	 */
 	public Entry()
 	{
 		text = "";
 		date = LocalDateTime.now();
 	}
 	
+	/**
+	 * Parameterized Constructor
+	 * @param text The text associated with the entry.
+	 * @param date The date the entry was made. 
+	 */
 	public Entry(String text, LocalDateTime date)
 	{
 		this.text = text; 
@@ -37,6 +45,7 @@ public abstract class Entry implements Serializable
 	}
 	
 	/**
+	 * Accessor for the entry's text
 	 * @return the userEntry
 	 */
 	public String getText() {
@@ -44,6 +53,7 @@ public abstract class Entry implements Serializable
 	}
 	
 	/**
+	 * Mutator ffor the Entry's text
 	 * @param userEntry the userEntry to set
 	 */
 	public void setUserEntry(String text) {
@@ -51,6 +61,7 @@ public abstract class Entry implements Serializable
 	}
 	
 	/**
+	 * Accessor for the date the entry was made
 	 * @return the date
 	 */
 	public LocalDateTime getDate() {
@@ -58,6 +69,7 @@ public abstract class Entry implements Serializable
 	}
 	
 	/**
+	 * Mutator to set the date associated with the entry
 	 * @param date the date to set
 	 */
 	public void setDate(LocalDateTime date) {
@@ -65,6 +77,7 @@ public abstract class Entry implements Serializable
 	}
 	
 	/**
+	 * Returns the list of comments on this entry
 	 * @return comments
 	 */
 	public ArrayList<Comment> getComments(){
@@ -72,6 +85,7 @@ public abstract class Entry implements Serializable
 	}
 	
 	/**
+	 * Mutator to set the list of comments on this entry.
 	 * @param comments
 	 */
 	public void setComments(ArrayList<Comment> comments) {
@@ -79,14 +93,16 @@ public abstract class Entry implements Serializable
 	}
 	
 	/**
-	 * @param text
+	 * Method used to add a new comment to the entry.
+	 * @param text The text for the comment
 	 */
 	public void newComment(String text) {
 		comments.add(new Comment(text, LocalDateTime.now(ZoneId.of(TIME_ZONE))));
 	}
 	
 	/**
-	 * @param index
+	 * Method to delete a comment via an index
+	 * @param index The index of the comment to delete.
 	 * @return the removed Comment
 	 */
 	public Comment deleteComment(int index) {
@@ -94,7 +110,8 @@ public abstract class Entry implements Serializable
 	}
 	
 	/**
-	 * @param index
+	 * Method used to get a single comment based on the index passed it.
+	 * @param index Index of comment
 	 * @return the comment at index
 	 */
 	public Comment getComment(int index) {
