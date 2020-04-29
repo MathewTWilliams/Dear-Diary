@@ -5,6 +5,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent; 
 
 /**
@@ -17,6 +18,8 @@ public class HomeScreenGUI extends SceneHandler
 {
 	private BorderPane borderPane; 
 	private Button loginButton; 
+	
+	private Label disclaimerLabel; 
 	
 	/**
 	 * Basic overriden constructor
@@ -33,7 +36,7 @@ public class HomeScreenGUI extends SceneHandler
 	private void setUpLoginButton()
 	{
 		loginButton = new Button();
-		loginButton.setText("Contine/Login");
+		loginButton.setText("Continue/Login");
 		borderPane.setCenter(loginButton);
 		BorderPane.setAlignment(loginButton, Pos.TOP_CENTER);
 		
@@ -71,7 +74,7 @@ public class HomeScreenGUI extends SceneHandler
 	protected void prepareScene() 
 	{
 		borderPane = new BorderPane(); 
-		borderPane.setStyle("-fx-background-color: GREY");
+		borderPane.setStyle("-fx-background-color: LIGHTSKYBLUE");
 		
 		Scene scene = new Scene(borderPane,400,600);
 		setScene(scene);

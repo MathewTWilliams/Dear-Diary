@@ -57,7 +57,7 @@ public class MainMenuScreen extends SceneHandler {
 		diaryEntryButton.setText("New Entry");
 		viewDiaryButton.setText("View Diary Entries");
 		trackerButton.setText("Track a Stat");
-		mentalHealthButton.setText("View Mental Health Info");
+		mentalHealthButton.setText("Mental Health Info");
 		
 		diaryEntryButton.setPrefSize(150, 75);
 		viewDiaryButton.setPrefSize(150, 75);
@@ -142,7 +142,7 @@ public class MainMenuScreen extends SceneHandler {
 	protected void prepareScene() {
 
 		borderPane = new BorderPane(); 
-		borderPane.setStyle("-fx-background-color : GREY");
+		borderPane.setStyle("-fx-background-color : LIGHTSKYBLUE");
 		Scene scene = new Scene(borderPane);
 		setScene(scene);
 		setUpHBox(); 
