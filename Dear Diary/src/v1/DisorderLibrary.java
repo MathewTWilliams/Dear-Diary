@@ -76,7 +76,7 @@ public class DisorderLibrary {
 		FileReader fr = new FileReader(f);
 		BufferedReader br = new BufferedReader(fr);
 
-		//Some Extra Shit
+		//Extra variables
 		String line =  null;
 		String disorder = null;
 		String disorderName = null;
@@ -92,12 +92,10 @@ public class DisorderLibrary {
 				int endIndex = line.length();
 				disorder = format(line.substring(startIndex+1, endIndex));
 				disorderName = disorder;
-				System.out.println(disorder);
 			} else if (line.contains("Description: ")) {
 				int startIndex = line.indexOf(":");
 				int endIndex = line.length();
 				description = line.substring(startIndex+1, endIndex).trim(); 
-				System.out.println(description);
 			} else if (line.contains("Symptoms: ")){
 				int startIndex = line.indexOf(":");
 				int endIndex = line.length();
@@ -134,18 +132,4 @@ public class DisorderLibrary {
 	private static String format(String inputString) {
 		return inputString.trim();
 	}
-	
-	/** CONTINUE OFF HERE
-	 * Method returns a random tip depending on the disorder
-	 * @param disorder Disorder of the tips being searched
-	 * @return One random tip for the particular disorder
-	 */
-	/**
-	
-	protected String newRandomTip() {
-		Random rand = new Random();
-		int index = rand.nextInt(Tips.getTipsOfDisord(disorder).size());
-		return Tips.getTipsOfDisord(disorder).get(index);
-	}
-	*/
 }
