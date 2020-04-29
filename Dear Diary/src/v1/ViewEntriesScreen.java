@@ -89,7 +89,7 @@ public class ViewEntriesScreen extends SceneHandler
 		mainPane = new VBox();
 		mainPane.setAlignment(Pos.TOP_CENTER);
 		mainPane.setPadding(new Insets(10,10,10,10));
-		mainPane.setStyle("-fx-background-color : GREY");
+		mainPane.setStyle("-fx-background-color : LIGHTSKYBLUE");
 		Scene scene = new Scene(mainPane);
 		setScene(scene);
 		
@@ -156,7 +156,7 @@ public class ViewEntriesScreen extends SceneHandler
 		datesLabel = new Label("Date and Time of Entries");
 		datesLabel.setFont( new Font("Arial",15));
 		datesLabel.setTextFill(Color.BLACK);
-		leftVBox.getChildren().add(datesLabel);
+		leftVBox.getChildren().add(0,datesLabel);
 		
 		entriesLabel = new Label("Entries");
 		entriesLabel.setFont(new Font("Arial",15));
@@ -216,9 +216,9 @@ public class ViewEntriesScreen extends SceneHandler
 	{
 		dateList = new ListView<String>();
 		dateList.setOrientation(Orientation.VERTICAL);
-		dateList.setMaxSize(200, 200);
+		dateList.setPrefSize(300, 600);
 		dateList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		leftVBox.getChildren().add(dateList);
+		leftVBox.getChildren().add(1,dateList);
 		
 
 		ArrayList<Entry> entries = getGUIManager().getUserData().getUserEntries();

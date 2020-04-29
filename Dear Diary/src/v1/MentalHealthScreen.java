@@ -65,7 +65,7 @@ public class MentalHealthScreen extends SceneHandler {
 		root = new VBox(); 
 		root.setAlignment(Pos.TOP_CENTER);
 		root.setPadding(new Insets(10,10,10,10));
-		root.setStyle("-fx-background-color : GREY");
+		root.setStyle("-fx-background-color : LIGHTSKYBLUE");
 		Scene scene = new Scene(root);
 		setScene(scene);
 		
@@ -182,8 +182,7 @@ public class MentalHealthScreen extends SceneHandler {
 	{
 		infoArea = new TextArea();
 		infoArea.setEditable(false);
-		infoArea.setMaxSize(300,750);
-		infoArea.setMaxHeight(750);
+		infoArea.setPrefSize(400, 600);
 		infoArea.setWrapText(true);
 		
 		rightVBox.getChildren().add(infoArea);

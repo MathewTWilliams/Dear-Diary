@@ -180,11 +180,11 @@ public class DiaryEntryScreen extends SceneHandler {
 		buttonBox.setAlignment(Pos.CENTER);
 		subPane.setAlignment(Pos.CENTER);
 
-		root.setStyle("-fx-background-color : GREY");
-		buttonBox.setStyle("-fx-background-color : GREY");
-		subPane.setStyle("-fx-background-color : GREY");
-		leftVBox.setStyle("-fx-background-color : GREY");
-		rightVBox.setStyle("-fx-background-color : GREY");
+		root.setStyle("-fx-background-color : LIGHTSKYBLUE");
+		buttonBox.setStyle("-fx-background-color :  LIGHTSKYBLUE");
+		subPane.setStyle("-fx-background-color :  LIGHTSKYBLUE");
+		leftVBox.setStyle("-fx-background-color :  LIGHTSKYBLUE");
+		rightVBox.setStyle("-fx-background-color : LIGHTSKYBLUE");
 
 		root.setSpacing(20d);
 		buttonBox.setSpacing(100d);

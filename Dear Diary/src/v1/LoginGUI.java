@@ -202,7 +202,7 @@ public class LoginGUI extends SceneHandler {
 	protected void prepareScene() {
 		
 		borderPane = new BorderPane(); 
-		borderPane.setStyle("-fx-background-color: GREY");
+		borderPane.setStyle("-fx-background-color: LIGHTSKYBLUE");
 		centerSubPane = new BorderPane(); 
 		borderPane.setCenter(centerSubPane);
 		BorderPane.setAlignment(centerSubPane, Pos.CENTER);
