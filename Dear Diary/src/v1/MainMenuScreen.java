@@ -28,10 +28,11 @@ public class MainMenuScreen extends SceneHandler {
 	private Button diaryEntryButton;
 	private Button viewDiaryButton;
 	private Button trackerButton;
+	private Button mentalHealthButton;
 	private BorderPane borderPane;
 	private HBox horizontalPane;
 	private Label welcomeLabel;
-	ChoiceBox<String> trackerChoice;
+
 	/**
 	 * Overriden basic constructor
 	 * @param manager THE GUI manager to make callbacks to. 
@@ -50,16 +51,19 @@ public class MainMenuScreen extends SceneHandler {
 		diaryEntryButton = new Button();
 		viewDiaryButton = new Button();
 		trackerButton = new Button();
+		mentalHealthButton = new Button(); 
 
-		trackerChoice = new ChoiceBox<String>();
+
 		diaryEntryButton.setText("New Entry");
 		viewDiaryButton.setText("View Diary Entries");
 		trackerButton.setText("Track a Stat");
-		trackerChoice.setValue("Tracker");
+		mentalHealthButton.setText("View Mental Health Info");
+		
 		diaryEntryButton.setPrefSize(150, 75);
 		viewDiaryButton.setPrefSize(150, 75);
 		trackerButton.setPrefSize(150, 75);
-		horizontalPane.getChildren().addAll(diaryEntryButton, viewDiaryButton, trackerButton);
+		mentalHealthButton.setPrefSize(150, 75);
+		horizontalPane.getChildren().addAll(diaryEntryButton, viewDiaryButton, trackerButton, mentalHealthButton);
 
 		diaryEntryButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
@@ -93,6 +97,15 @@ public class MainMenuScreen extends SceneHandler {
 		});
 
 
+		mentalHealthButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+			public void handle(MouseEvent event)
+			{
+				cleanUpScene();
+				getGUIManager().moveToMentalHealthScreen();
+			}
+
+		});
 
 	}
 

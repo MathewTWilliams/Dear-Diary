@@ -32,6 +32,7 @@ public class GUIManager extends Application {
 	private DiaryEntryScreen entryScreen;
 	private TrackStatGUI trackStatScreen; 
 	private ViewEntriesScreen viewEntriesScreen;
+	private MentalHealthScreen mentalHealthScreen;
 	
 	private User userData;
 	
@@ -109,6 +110,7 @@ public class GUIManager extends Application {
 		entryScreen = new DiaryEntryScreen(this); 
 		trackStatScreen = new TrackStatGUI(this);
 		viewEntriesScreen = new ViewEntriesScreen(this);
+		mentalHealthScreen = new MentalHealthScreen(this);
 		currentScene = homeScreen.getScene();
 
 	}
@@ -150,10 +152,18 @@ public class GUIManager extends Application {
 		return trackStatScreen;
 	}
 	
-	
+	/**
+	 * Method used by other screens to move to the view entries screen.
+	 */
 	public void moveToViewEntriesScreen()
 	{
 		currentScene = viewEntriesScreen.getScene();
+		mainStage.setScene(currentScene);
+	}
+	
+	public void moveToMentalHealthScreen()
+	{
+		currentScene = mentalHealthScreen.getScene();
 		mainStage.setScene(currentScene);
 	}
 	
@@ -168,6 +178,7 @@ public class GUIManager extends Application {
 		BorderPane.setAlignment(title, Pos.CENTER);
 		
 	}
+	
 	
 	/**
 	 * Accessor for other screens to access the default title of the application. 
