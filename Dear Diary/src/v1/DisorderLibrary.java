@@ -120,6 +120,10 @@ public class DisorderLibrary {
 				disorders.add(x);
 			}
 		}
+		
+		
+		br.close();
+		fr.close();
 	}
 	
 	/**
