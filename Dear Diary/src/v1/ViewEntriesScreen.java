@@ -14,6 +14,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -216,7 +217,9 @@ public class ViewEntriesScreen extends SceneHandler
 		dateList = new ListView<String>();
 		dateList.setOrientation(Orientation.VERTICAL);
 		dateList.setMaxSize(200, 200);
+		dateList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		leftVBox.getChildren().add(dateList);
+		
 
 		ArrayList<Entry> entries = getGUIManager().getUserData().getUserEntries();
 	
@@ -228,9 +231,6 @@ public class ViewEntriesScreen extends SceneHandler
 		
 		if(entries.size() > 0)
 		{
-			//set textfield to the first entry
-			changeEntrySelected(entries.get(0).getDate().toString());
-
 			Entry firstEntry = entries.get(0);
 			if(lambdaMap.containsKey(firstEntry.getClass().getSimpleName()))
 			{
@@ -276,7 +276,7 @@ public class ViewEntriesScreen extends SceneHandler
 	}
 	
 	/**
-	 * Method used to instantiate out HashMap of Lambdas
+	 * Method used to instantiate our HashMap of Lambdas
 	 */
 	private void makeLambdaMap()
 	{

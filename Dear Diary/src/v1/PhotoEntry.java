@@ -10,6 +10,8 @@ import java.io.*;
  */
 public class PhotoEntry extends Entry {
 
+	private static final long serialVersionUID = 1L;
+	
 	private String imageFileName;
 	public File imageFile;
 	public String imageFilePath;

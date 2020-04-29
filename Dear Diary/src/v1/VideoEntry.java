@@ -9,6 +9,8 @@ import java.io.*;
  * @version 4.26.2020
  */
 public class VideoEntry extends Entry {
+	
+	private static final long serialVersionUID = 1L;
 
 	private String videoFileName;
 	public File videoFile;
