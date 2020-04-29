@@ -84,7 +84,6 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 	private LineChart<String, Number> lineChart;
 	@SuppressWarnings("rawtypes")
 	private XYChart.Series series;
-	private final static Logger LOGGER = Logger.getLogger(TrackStatGUI.class.getName());
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public TrackStatGUI(GUIManager manager) throws Exception 
@@ -107,7 +106,6 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 						new FileOutputStream("Trackers.ser");
 				ObjectOutputStream oos = new ObjectOutputStream(fos);
 				oos.writeObject(trackerTable);
-				LOGGER.info("NO FILE FOUND, CREATING NEW FILE");
 				oos.close();
 				fos.close();
 			}catch(IOException ioe)
@@ -119,7 +117,6 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 				FileInputStream fis = new FileInputStream("trackers.ser");
 				ObjectInputStream ois = new ObjectInputStream(fis);
 				trackerTable = (HashMap) ois.readObject();
-				LOGGER.info("FILE FOUND, RETRIEVING TRACKERS");
 				ois.close();
 				fis.close();
 			}catch(IOException ioe)
@@ -273,7 +270,6 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 							int stat = cpStats.get(key);
 							series.getData().add(new XYChart.Data(key, stat));
 						}
-						LOGGER.info("LINE CHART BEING FILLED");
 						lineChart.getData().add(series);
 					}
 					ois.close();
@@ -308,28 +304,24 @@ public class TrackStatGUI extends SceneHandler implements Serializable
 			lineChart.getData().clear();
 			lineChart.setTitle("Mood Tracker");
 			showChart.setDisable(false);
-			LOGGER.info("Switching Trackers");
 		}
 		else if(trackerToChange.equals("Sleep Tracker")) {
 			descriptionLabel.setText("How many hours did you sleep?");
 			lineChart.getData().clear();
 			lineChart.setTitle("Exercise Tracker");
 			showChart.setDisable(false);
-			LOGGER.info("Switching Trackers");
 		}
 		else if(trackerToChange.equals("Exercise Tracker")) {
 			descriptionLabel.setText("How long did you work out today?");
 			lineChart.getData().clear();
 			lineChart.setTitle("Exercise Tracker");
 			showChart.setDisable(false);
-			LOGGER.info("Switching Trackers");
 		}
 		else if(trackerToChange.equals("Diet Tracker")) {
 			descriptionLabel.setText("About how many calories did you eat today?");
 			lineChart.getData().clear();
 			lineChart.setTitle("Diet Tracker");
 			showChart.setDisable(false);
-			LOGGER.info("Switching Trackers");
 		}
 
 		statTextField.clear();
