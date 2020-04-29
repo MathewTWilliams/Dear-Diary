@@ -69,7 +69,7 @@ public class DisorderLibrary {
 	private void collectDisorders() throws IOException {
 
 		//Text File being used to store disorders in
-		String filename = "DisorderList.txt";
+		String filename = "Assets\\DisorderList.txt";
 
 		//Initialization of file w/ appropriate reader and buffer
 		File f = new File(filename);
@@ -128,7 +128,7 @@ public class DisorderLibrary {
 	 * @return Formatted string without extra spaces
 	 */
 	private static String format(String inputString) {
-		return inputString.replaceAll("\\s", "").toLowerCase().trim();
+		return inputString.trim();
 	}
 	
 	/** CONTINUE OFF HERE

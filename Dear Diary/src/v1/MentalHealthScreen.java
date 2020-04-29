@@ -182,8 +182,13 @@ public class MentalHealthScreen extends SceneHandler {
 	{
 		infoArea = new TextArea();
 		infoArea.setEditable(false);
-		infoArea.setMaxSize(300,600);
+		infoArea.setMaxSize(300,750);
+		infoArea.setMaxHeight(750);
 		infoArea.setWrapText(true);
+		
+		rightVBox.getChildren().add(infoArea);
+		
+		changeDisorderSelected(disorderLibrary.getDisorders().get(0).getName());
 	}
 	
 	/**
@@ -198,7 +203,21 @@ public class MentalHealthScreen extends SceneHandler {
 			if(d.getName() == name) 
 			{
 				String newText = "Name: " + name + "\n\n";
-				newText.concat("Description: " + d.getDescription()+ "\n\n");
+				newText += "Description: " + d.getDescription()+ "\n\n";
+				newText += "Symptoms: \n";
+				for(String s: d.getSymptoms())
+				{
+					newText += s + "\n";
+				}
+				newText += "\n";
+				newText += "Tips: \n";
+				for(String s: d.getTips())
+				{
+					newText += s + "\n";
+				}
+				
+				infoArea.setText(newText);
+				return;
 				
 			}
 		}
