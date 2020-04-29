@@ -16,7 +16,7 @@ import javafx.stage.Stage;
  * to the same instance of this class so the screens can switch between each other without knowing about each other. 
  * 
  * @author Matt Williams
- * @version 3.24.2020
+ * @version 4.24.2020
  *
  */
 public class GUIManager extends Application {

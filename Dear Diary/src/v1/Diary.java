@@ -26,6 +26,9 @@ public class Diary implements Serializable
 	
 	private static final String TIME_ZONE = "America/New_York";
 
+	/**
+	 * Default Constructor
+	 */
 	public Diary()
 	{
 		entries = new LinkedHashMap<String, ArrayList<Entry>>(); 
@@ -153,7 +156,7 @@ public class Diary implements Serializable
 	
 	
 	/**
-	 * test function to test GUI
+	 * method used to put in fake entries for the diary.
 	 */
 	private void makeFakeEntries()
 	{

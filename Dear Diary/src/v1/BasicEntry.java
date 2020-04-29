@@ -14,11 +14,19 @@ public class BasicEntry extends Entry implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * Default Constructor
+	 */
 	public BasicEntry()
 	{
 		super();
 	}
 	
+	/**
+	 * Parameterized Constructor
+	 * @param text The text entered for the entry
+	 * @param date The date the entry was made.
+	 */
 	public BasicEntry(String text, LocalDateTime date)
 
 	{

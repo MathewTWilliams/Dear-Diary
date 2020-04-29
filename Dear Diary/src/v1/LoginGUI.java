@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -22,6 +23,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
@@ -36,10 +38,11 @@ public class LoginGUI extends SceneHandler {
 
 	private TextField nameField; 
 	private TextField dobField; 
+	private TextField genderField;
 	private Label descriptionLabel; 
-	private BorderPane borderPane; 
-	private BorderPane centerSubPane;
 	private Button submitButton;
+	
+	private VBox root; 
 	
 	/**Logger for Login GUI, will help with any logging issues within the application*/
 	private final static Logger LOGGER =  
@@ -59,15 +62,12 @@ public class LoginGUI extends SceneHandler {
 	 */
 	private void setUpLabels()
 	{	
-		descriptionLabel = new Label("Please Enter your name and Date of Birth(mm/dd/yyyy).");
+		descriptionLabel = new Label("Please Enter your name, Date of Birth(mm/dd/yyyy), and Gender.");
 		descriptionLabel.setTextFill(Color.BLACK);
 		descriptionLabel.setFont(new Font("Arial",20));
-		centerSubPane.setTop(descriptionLabel);
 		BorderPane.setAlignment(descriptionLabel, Pos.TOP_CENTER);
 
-		borderPane.setTop(getTitle());
-		
-		
+		root.getChildren().addAll(getTitle(),descriptionLabel);
 	}
 	
 	/**
@@ -76,17 +76,21 @@ public class LoginGUI extends SceneHandler {
 	private void setUpTextFields()
 	{
 		nameField = new TextField(); 
-		centerSubPane.setLeft(nameField);
 		nameField.setPromptText("Name");
-		nameField.getParent().requestFocus();
 		nameField.setMaxWidth(200);
 		BorderPane.setAlignment(nameField, Pos.CENTER_RIGHT);
 		
 		dobField = new TextField();
-		centerSubPane.setCenter(dobField);
 		dobField.setPromptText("DOB: mm/dd/yyyy");
 		dobField.setMaxWidth(200);
 		BorderPane.setAlignment(dobField, Pos.CENTER);
+		
+		genderField = new TextField();
+		genderField.setPromptText("Enter your gender");
+		genderField.setMaxWidth(200);
+		
+		root.getChildren().addAll(nameField,dobField,genderField);
+		nameField.getParent().requestFocus();
 		
 	}
 	
@@ -98,8 +102,8 @@ public class LoginGUI extends SceneHandler {
 		//submit button
 		submitButton = new Button();
 		submitButton.setText("Submit");
-		centerSubPane.setRight(submitButton);
-		BorderPane.setAlignment(submitButton, Pos.CENTER_RIGHT);
+		root.getChildren().add(submitButton);
+		BorderPane.setAlignment(submitButton, Pos.CENTER_LEFT);
 		
 		
 		submitButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -120,8 +124,6 @@ public class LoginGUI extends SceneHandler {
 				}
 			}
 		});
-		
-		
 	}
 	
 	/**
@@ -200,14 +202,14 @@ public class LoginGUI extends SceneHandler {
 	 */
 	@Override
 	protected void prepareScene() {
+
+		root = new VBox();
+		root.setPadding(new Insets(10,10,10,10));
+		root.setSpacing(25d);
+		root.setAlignment(Pos.TOP_CENTER);
+		root.setStyle("-fx-background-color: LIGHTSKYBLUE");
 		
-		borderPane = new BorderPane(); 
-		borderPane.setStyle("-fx-background-color: LIGHTSKYBLUE");
-		centerSubPane = new BorderPane(); 
-		borderPane.setCenter(centerSubPane);
-		BorderPane.setAlignment(centerSubPane, Pos.CENTER);
-		
-		Scene scene = new Scene(borderPane);
+		Scene scene = new Scene(root);
 		setScene(scene);
 		
 		setUpLabels(); 

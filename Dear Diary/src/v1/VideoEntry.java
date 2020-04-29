@@ -14,8 +14,13 @@ public class VideoEntry extends Entry {
 
 	private String videoFileName;
 	public File videoFile;
-	public String videoFilePath;
 	
+	/**
+	 * Parameterized Constructor
+	 * @param videoFileName The name of the video file.
+	 * @param entry The text associated with the entry
+	 * @param date The date the entry was made.
+	 */
 	public VideoEntry(String videoFileName, String entry, LocalDateTime date)
 	{
 		super(entry, date);
@@ -24,6 +29,7 @@ public class VideoEntry extends Entry {
 	}
 	
 	/**
+	 * Setter for the name of the video file.
 	 * @param videoFileName
 	 */
 	public void setVideoFileName(String videoFileName) {
@@ -31,6 +37,7 @@ public class VideoEntry extends Entry {
 	}
 	
 	/**
+	 * Getter for the name of the video file
 	 * @return videoFileName
 	 */
 	public String getVideoFileName() {
@@ -38,20 +45,7 @@ public class VideoEntry extends Entry {
 	}
 	
 	/**
-	 * @param videoFilePath
-	 */
-	public void setVideoFilePath(String videoFilePath) {
-		this.videoFilePath = videoFilePath;
-	}
-	
-	/**
-	 * @return videoFilePath
-	 */
-	public String getVideoFilePath() {
-		return videoFilePath;
-	}
-	
-	/**
+	 * Method used to set the video file based on a filename
 	 * @param videoFileName
 	 */
 	public void setFile(String videoFileName) {
@@ -59,6 +53,7 @@ public class VideoEntry extends Entry {
 	}
 	
 	/**
+	 * Getter to access the actual video file
 	 * @return videoFile
 	 */
 	public File getFile() {

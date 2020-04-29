@@ -108,6 +108,7 @@ public class User implements Serializable
 	}
 
 	/**
+	 * Getter for the user's name
 	 * @return the name
 	 */
 	public String getName() {
@@ -115,6 +116,7 @@ public class User implements Serializable
 	}
 
 	/**
+	 * Setter for the user's name
 	 * @param name the name to set
 	 */
 	public void setName(String name) {
@@ -122,6 +124,7 @@ public class User implements Serializable
 	}
 
 	/**
+	 * Getter for the date of birth of the user.
 	 * @return the dateOfBirth
 	 */
 	public String getDateOfBirth() {
@@ -129,6 +132,7 @@ public class User implements Serializable
 	}
 
 	/**
+	 * Setter for the date of birth of the user
 	 * @param dateOfBirth the dateOfBirth to set
 	 */
 	public void setDateOfBirth(String dateOfBirth) {
@@ -136,6 +140,7 @@ public class User implements Serializable
 	}
 
 	/**
+	 * Getter for the gender of the user.
 	 * @return the gender
 	 */
 	public String getGender() {
@@ -143,13 +148,17 @@ public class User implements Serializable
 	}
 
 	/**
+	 * Setter for the gender of the user.
 	 * @param gender the gender to set
 	 */
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
 	
-	
+	/**
+	 * Method used to access the number of entries the user has. 
+	 * @return
+	 */
 	public int getNumberofDiaryEntrees()
 	{
 		return diary.numberOfEntries();
