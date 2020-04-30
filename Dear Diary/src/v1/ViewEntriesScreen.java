@@ -69,16 +69,6 @@ public class ViewEntriesScreen extends SceneHandler
 		makeLambdaMap(); 
 	
 	}
-	
-	/**
-	 * Overriden method used to clean up the scene before a different scene is switched to.
-	 */
-	@Override
-	protected void cleanUpScene() {
-		super.cleanUpScene();
-		
-
-	}
 
 	/**
 	 * Overriden method used to prepare the scene before the GUI is changed to this scene.s
