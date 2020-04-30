@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 /**
  * A class to track diet stats, currently only contains ability to track stats. 
  * @author Julian Pino
@@ -14,7 +15,7 @@ import java.util.HashMap;
 public class DietTracker implements Trackable, Serializable{
 	
 	private static final long serialVersionUID = -4597924703830341777L;
-	private HashMap<String, Integer> trackedStats = new HashMap<String, Integer>();
+	private HashMap<String, Integer> trackedStats = new LinkedHashMap<String, Integer>();
 	private DateFormat dateFormat;
 	
 	public DietTracker() {

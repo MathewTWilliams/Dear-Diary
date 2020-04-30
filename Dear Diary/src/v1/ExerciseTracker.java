@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 /**
  * A class to track exercise stats, currently only contains ability to track stats. 
  * @author Julian Pino
@@ -15,7 +16,7 @@ public class ExerciseTracker implements Trackable, Serializable {
 
 
 	private static final long serialVersionUID = 2928208117201869150L;
-	private HashMap<String, Integer> trackedStats = new HashMap<String, Integer>();
+	private HashMap<String, Integer> trackedStats = new LinkedHashMap<String, Integer>();
 	private DateFormat dateFormat;
 	
 	public ExerciseTracker() {
