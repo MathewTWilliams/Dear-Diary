@@ -1,6 +1,7 @@
 package v1;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -63,6 +64,8 @@ public class DiaryEntryScreen extends SceneHandler {
 	private HBox buttonBox; 
 	
 	private ListView<String> fileView;
+	
+	private static final String TIME_ZONE = "America/New_York";
 
 	
 	/**
@@ -295,17 +298,25 @@ public class DiaryEntryScreen extends SceneHandler {
 	 */
 	private void LogEntry()
 	{
+		Entry newEntry = null;
+		LocalDateTime now = LocalDateTime.now(ZoneId.of(TIME_ZONE));
+		
 		switch(entryChoiceBox.getSelectionModel().getSelectedItem())
 		{
 			case TEXT_ENTRY:
-				getGUIManager().getUserData().logBasicEntry(entryArea.getText());
+				newEntry = new BasicEntry(entryArea.getText(),now);
 				break;
 			case PHOTO_ENTRY:
-				getGUIManager().getUserData().logFileEntry(fileView.getSelectionModel().getSelectedItem(), entryArea.getText(), true);
+				newEntry = new PhotoEntry(fileView.getSelectionModel().getSelectedItem(),entryArea.getText(),now);
 				break;
 			case VIDEO_ENTRY:
-				getGUIManager().getUserData().logFileEntry(fileView.getSelectionModel().getSelectedItem(), entryArea.getText(), false);
-				break; 
+				newEntry = new VideoEntry(fileView.getSelectionModel().getSelectedItem(),entryArea.getText(),now);
+				break;
+				
 		}
+		
+		getGUIManager().getUserData().logBasicEntry(newEntry);
+		
+	
 	}
 }

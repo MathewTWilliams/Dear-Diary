@@ -32,7 +32,6 @@ public class User implements Serializable
 	private String gender; 
 	private Diary diary = new Diary(); 
 	
-	private static final String TIME_ZONE = "America/New_York";
 	
 	/**
 	 * Default Constructor
@@ -57,37 +56,13 @@ public class User implements Serializable
 	
 	/**
 	 * Method used to log a basic text entry;
-	 * @param entry The text to be put in the entry
+	 * @param entry The new entry
 	 */
-	public void logBasicEntry(String entry)
+	public void logBasicEntry(Entry entry)
 	{
-		LocalDateTime now = LocalDateTime.now(ZoneId.of(TIME_ZONE));
-		Entry newEntry = new BasicEntry(entry, now);
-		diary.addEntry(newEntry);
+		diary.addEntry(entry);
 	}
-	
-	/**
-	 * Method used to Log Video and Photo entries
-	 * @param fileName The name of the file
-	 * @param isPhoto Is this file a photo?
-	 */
-	public void logFileEntry(String fileName, String text, boolean isPhoto)
-	{
-		LocalDateTime now = LocalDateTime.now(ZoneId.of(TIME_ZONE));
-		Entry newEntry;
-		
-		if(isPhoto)
-		{
-			newEntry = new PhotoEntry(fileName,text,now);
-		}
-		else
-		{
-			newEntry = new VideoEntry(fileName,text,now);
-		}
-		
-		diary.addEntry(newEntry);
-	}
-	
+
 	/**
 	 * Method used to access all the user entries
 	 * @return

@@ -6,14 +6,11 @@ import java.io.*;
 /**
  * Class used to store the data of a video entry
  * @author Liam Donovan
- * @version 4.26.2020
+ * @version 4.29.2020
  */
-public class VideoEntry extends Entry {
+public class VideoEntry extends FileEntry {
 	
 	private static final long serialVersionUID = 1L;
-
-	private String videoFileName;
-	public File videoFile;
 	
 	/**
 	 * Parameterized Constructor
@@ -23,41 +20,15 @@ public class VideoEntry extends Entry {
 	 */
 	public VideoEntry(String videoFileName, String entry, LocalDateTime date)
 	{
-		super(entry, date);
-		this.videoFileName = videoFileName;
-		setFile(videoFileName);
+		super(videoFileName,entry, date);
 	}
-	
-	/**
-	 * Setter for the name of the video file.
-	 * @param videoFileName
-	 */
-	public void setVideoFileName(String videoFileName) {
-		this.videoFileName = videoFileName;
-	}
-	
-	/**
-	 * Getter for the name of the video file
-	 * @return videoFileName
-	 */
-	public String getVideoFileName() {
-		return videoFileName;
-	}
-	
+
 	/**
 	 * Method used to set the video file based on a filename
 	 * @param videoFileName
 	 */
 	public void setFile(String videoFileName) {
-		videoFile = new File("Files\\Videos\\" + videoFileName);
-	}
-	
-	/**
-	 * Getter to access the actual video file
-	 * @return videoFile
-	 */
-	public File getFile() {
-		return videoFile;
+		file = new File("Files\\Videos\\" + videoFileName);
 	}
 	
 	/**
@@ -66,7 +37,7 @@ public class VideoEntry extends Entry {
 	public String toString()
 	{
 		return 	   " <video width='300' autoplay>" +
-				   "<source src ='" + videoFile.toURI() + 
+				   "<source src ='" + file.toURI() + 
 				   "' type='video/mp4' />" +
 				   "Your browser does not support the video element.</video>";
 	}
